@@ -1,0 +1,12 @@
+{
+	"number": "Код",
+    "valve_name":"MARK_EL",
+    "manufacturer":"MNF_NAME_EL",
+    "block_number":"CL_OPB_S1",
+    "commissioning_date":"DT_BEG_EL",
+    "defect_date":"DT_FA",
+    "defect_time":"TM_FA",
+    "defect_description":"DSC_FA",
+    "repair_date":"DT_END_RP",
+    "repair_time":"TM_END_RP"
+}
