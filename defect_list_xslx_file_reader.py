@@ -23,7 +23,7 @@ def read_column_names_from_json(column_names_file_path:str) -> Dict[str, str]:
     return column_names
 
 
-def get_data_from_sheet(defects_list_sheet, column_names):
+def get_defect_data_from_sheet(defects_list_sheet, column_names):
     """Извлечение данных о дефектах из листа Excel.
     
     Args:
@@ -96,6 +96,7 @@ def get_defect_record_from_xlsx_row(valve_list, defect_list_row, column_numbers)
         valve_list_index = False
     # извлечение записи о дефекте из строки
     new_defect = Defect(
+        number = record_data["number"],
         defect_date=record_data["defect_date"],
         defect_time=record_data["defect_time"],
         defect_description=record_data["defect_description"],
