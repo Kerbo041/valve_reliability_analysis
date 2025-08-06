@@ -10,7 +10,6 @@ class Defect:
         repair_date=None,
         repair_time=None,
     ):
-
         self.defect_date = defect_date
         self.defect_time = defect_time
         self.defect_description = defect_description
