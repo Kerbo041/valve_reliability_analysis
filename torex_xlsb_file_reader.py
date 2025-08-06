@@ -6,7 +6,7 @@ from json import load
 
 # from datetime import datetime, timedelta
 # import os
-from model.defect_record import DefectRecord
+from model.defect import DefectRecord
 
 
 def read_column_names_from_json(column_names_file_path):
