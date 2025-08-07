@@ -34,7 +34,7 @@ class Valve:
     ):
         self.valve_name = valve_name
         self.manufacturer = manufacturer
-        self.block_number = block_number
+        self.block_number = self.set_block_number(block_number)
         self.commissioning_date = commissioning_date
         self.valve_type = valve_type
         self.valve_type_short = valve_type_short                 # ИЗ ТОРЭКС
@@ -54,6 +54,11 @@ class Valve:
         self.valve_name_plant = torex_record.valve_name_plant    
         self.full_valve_name = torex_record.full_valve_name    
 
+    def set_block_number(self, block_number):
+        if block_number == "3; 4":
+            self.block_number = "3-4"
+        else: 
+            self.block_number = block_number
     def __str__(self):
         output = f"{self.valve_name};{self.manufacturer};{self.get_descritpion()};{self.get_block_number()};{self.commissioning_date};"
         # if self.description:
