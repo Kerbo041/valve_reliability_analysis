@@ -104,7 +104,6 @@ def get_defect_record_from_xlsx_row(valve_list, defect_list_row, column_numbers)
         repair_time=record_data["repair_time"],
     )
     # если арматура найдена, то дефект добавляется к ней
-    if valve_list_index:
     if valve_list_index is not False:
         valve_list[valve_list_index].add_defect(new_defect)
     else:
