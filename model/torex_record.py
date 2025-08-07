@@ -2,7 +2,7 @@ class TorexRecord:
 
     def __init__(
         self,
-        valve_name,
+        full_valve_name,
         description,
         valve_name_operational,
         valve_name_plant,
@@ -10,7 +10,7 @@ class TorexRecord:
         valve_type_short,
         commissioning_date,
     ):
-        self.valve_name = valve_name
+        self.full_valve_name = full_valve_name
         self.description = description
         self.valve_name_operational = valve_name_operational
         self.valve_name_plant = valve_name_plant
@@ -18,7 +18,19 @@ class TorexRecord:
         self.valve_type_short = valve_type_short
         self.commissioning_date = commissioning_date
     def __str__(self):
-        return  f"{self.valve_name};{self.description};{self.block_number};{self.commissioning_date};"
+        return  f"{self.full_valve_name};{self.description};{self.block_number};{self.commissioning_date};"
     
     def get_block_number(self):
         return self.block_number.replace("БЛОК ", "")
+    
+    def get_valve_name_upper(self):
+        if type(self.full_valve_name) is str:
+            return self.full_valve_name.upper()
+        else:
+            return self.full_valve_name
+    
+    def get_valve_name_operational_upper(self):
+        if type(self.valve_name_operational) is str:
+            return self.valve_name_operational.upper()
+        else:
+            return self.valve_name_operational

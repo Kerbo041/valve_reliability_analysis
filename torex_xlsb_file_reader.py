@@ -52,7 +52,7 @@ def get_torex_record_from_xlsx_row(defect_list_row, column_numbers):
     for key in column_numbers:
         record_data[key] = defect_list_row[column_numbers[key]]
     return TorexRecord(
-        valve_name = record_data["valve_name"],
+        full_valve_name = record_data["full_valve_name"],
         description = record_data["description"],
         valve_name_operational = record_data["valve_name_operational"],
         valve_name_plant = record_data["valve_name_plant"],
