@@ -32,7 +32,7 @@ class Valve:
     ):
         self.valve_name = valve_name
         self.manufacturer = manufacturer
-        self.block_number = block_number
+        self.block_number = self.set_block_number(block_number)
         self.commissioning_date = commissioning_date
         self.valve_type = valve_type                 # ИЗ ТОРЭКС
         self.description = description                 # ИЗ ТОРЭКС
