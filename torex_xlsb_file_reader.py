@@ -9,13 +9,13 @@ def read_column_names_from_json(column_names_file_path):
     return column_names
 
 
-def get_torex_data_from_sheet(defects_list_sheet, column_names):
+def get_torex_data_from_sheet(defects_list_sheet, column_names)-> List[TorexRecord]:
     header_row = list(
         defects_list_sheet.iter_rows(min_row=1, max_row=1, values_only=True)
     )[0]
     column_numbers = get_column_numbers(column_names, header_row)
     defect_records_list = []
-    for row in defects_list_sheet.iter_rows(min_row=2, values_only=True):
+    for row in defects_list_sheet.iter_rows(min_row=1, values_only=True):
         defect_records_list.append(get_torex_record_from_xlsx_row(row, column_numbers))
     return defect_records_list
 
