@@ -13,6 +13,18 @@ torex_file_path = (
     "files\\Регистр ТОРЭКС_прореженный.xlsx"  # Укажите путь к вашему файлу
 )
 
+
+def check_valve_type(valve: Valve):
+    result = False
+    if valve.valve_type is not None and valve.main_valve_type is not None:
+        if valve.valve_type.upper().find(valve.main_valve_type.upper()) == -1 or (
+            valve.get_descritpion() != ""
+            and valve.get_descritpion().find(valve.main_valve_type.upper()) == -1
+        ):
+            result = True
+    return result
+
+
 blacklist: List[str] = []
 
 with open("files\\names_blacklist.txt", encoding="utf-8") as f:
@@ -63,10 +75,14 @@ file_valves_without_description = open(
 file_valves_with_main_type = open(
     "files\\valves_with_main_type.csv", "w", encoding="utf-8"
 )
+file_valves_error_type = open("files\\valves_error_type.csv", "w", encoding="utf-8")
+file_not_valves = open("files\\not_valves.csv", "w", encoding="utf-8")
 file_not_valves = open("files\\not_valves.csv", "w", encoding="utf-8")
 
 for valve_name in valve_list:
     get_type_from_element_name(valve_list[valve_name], whitelist)
+    # if check_valve_type(valve_list[valve_name]):
+    #     print(valve_list[valve_name], file=file_valves_error_type)
     if valve_list[valve_name].get_descritpion() != "":
         print(valve_list[valve_name], file=file_valves_with_description)
     elif valve_list[valve_name].valve_type is not None:
@@ -77,6 +93,7 @@ for valve_name in valve_list:
         print(valve_list[valve_name], file=file_valves_without_description)
     else:
         print(valve_list[valve_name], file=file_not_valves)
+
 
 # with open("files\\c.csv", "w",encoding="utf-8") as f:
 #         for valve_name in valve_list:
