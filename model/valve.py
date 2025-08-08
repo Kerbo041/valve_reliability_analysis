@@ -25,7 +25,9 @@ class Valve:
         manufacturer=None,
         block_number=None,
         commissioning_date=None,
+        element_name = None,
         valve_type = None, # Для дальнейшего определения
+        main_valve_type = None, # Для дальнейшего определения
         valve_type_short=None,     # ИЗ ТОРЭКС
         description=None,     # ИЗ ТОРЭКС
         valve_name_operational=None,     # ИЗ ТОРЭКС
@@ -34,9 +36,11 @@ class Valve:
     ):
         self.valve_name = valve_name
         self.manufacturer = manufacturer
-        self.block_number = self.set_block_number(block_number)
+        self.element_name = element_name
+        self.set_block_number(block_number)
         self.commissioning_date = commissioning_date
         self.valve_type = valve_type
+        self.main_valve_type = main_valve_type
         self.valve_type_short = valve_type_short                 # ИЗ ТОРЭКС
         self.description = description                 # ИЗ ТОРЭКС
         self.valve_name_operational = valve_name_operational                # ИЗ ТОРЭКС
@@ -60,7 +64,7 @@ class Valve:
         else: 
             self.block_number = block_number
     def __str__(self):
-        output = f"{self.valve_name};{self.manufacturer};{self.get_descritpion()};{self.get_block_number()};{self.commissioning_date};"
+        output = f"{self.valve_name};{self.manufacturer};type: {self.valve_type};main type: {self.main_valve_type};description: {self.get_descritpion()};element_name: {self.element_name};{self.full_valve_name};{self.get_block_number()};{self.commissioning_date};"
         # if self.description:
         #     output += f"description:{self.description};"
         for iter, defect in enumerate(self.defect_list):
@@ -98,4 +102,4 @@ class Valve:
             else:
                 return f"from_name: {self.full_valve_name.replace(self.valve_name, "")};"
         else:
-            return None
+            return ""

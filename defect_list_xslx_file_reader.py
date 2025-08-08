@@ -9,19 +9,6 @@ from typing import Dict, List, Tuple
 
 """
 
-def read_column_names_from_json(column_names_file_path:str) -> Dict[str, str]:
-    """Чтение названий столбцов из JSON-файла.
-    
-    Args:
-        column_names_file_path (str): Путь к JSON-файлу с названиями столбцов.
-    
-    Returns:
-        dict: Словарь с названиями столбцов.
-    """
-    with open(column_names_file_path, encoding="utf-8") as column_names_file:
-        column_names = load(column_names_file)
-    return column_names
-
 
 def get_defect_data_from_sheet(defects_list_sheet, column_names):
     """Извлечение данных о дефектах из листа Excel.
@@ -114,6 +101,7 @@ def get_defect_record_from_xlsx_row(valve_list, defect_list_row, column_numbers)
             manufacturer=record_data["manufacturer"],
             block_number=record_data["block_number"],
             commissioning_date=record_data["commissioning_date"],
+            element_name=record_data["element_name"]
         )
         new_valve.add_defect(new_defect)
         valve_list.append(new_valve)
