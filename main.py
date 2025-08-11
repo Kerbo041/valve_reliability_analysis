@@ -2,7 +2,8 @@ from defect_list_xslx_file_reader import get_defect_data_from_sheet
 from torex_xlsb_file_reader import get_torex_data_from_sheet
 from valve_type_search_in_torex import valve_type_search_in_torex
 from valve_type_analyzer import get_type_from_element_name, filter_valves_by_name
-from model.valve import Valve
+from defect_type_analyzer import get_defect_type
+from model.valve import Valve, Defect
 from model.torex_record import TorexRecord
 from json import load
 from typing import Dict, List, Tuple
@@ -34,6 +35,9 @@ with open("files\\names_blacklist.txt", encoding="utf-8") as f:
 
 with open("files\\names_whitelist.json", encoding="utf-8") as whitelist_file:
     whitelist = load(whitelist_file)
+
+with open("files\\defect_list.json", encoding="utf-8") as defect_types_file:
+    defect_types = load(defect_types_file)
 
 with open("column_names.json", encoding="utf-8") as column_names_file:
     column_names = load(column_names_file)
@@ -81,6 +85,7 @@ file_not_valves = open("files\\not_valves.csv", "w", encoding="utf-8")
 
 for valve_name in valve_list:
     get_type_from_element_name(valve_list[valve_name], whitelist)
+    get_defect_type(valve_list[valve_name], defect_types)
     # if check_valve_type(valve_list[valve_name]):
     #     print(valve_list[valve_name], file=file_valves_error_type)
     if valve_list[valve_name].get_descritpion() != "":
