@@ -1,6 +1,7 @@
 from model.defect import Defect
 from model.torex_record import TorexRecord
 from typing import Dict, List, Tuple
+from datetime import datetime
 
 class Defect:
 
@@ -40,7 +41,10 @@ class Valve:
         self.manufacturer = manufacturer
         self.element_name = element_name
         self.set_block_number(block_number)
-        self.commissioning_date = commissioning_date
+        try:
+            self.commissioning_date = datetime.strptime(commissioning_date, "%d.%m.%Y")
+        except:
+            self.commissioning_date = None
         self.valve_type = valve_type
         self.main_valve_type = main_valve_type
         self.valve_type_short = valve_type_short  # ИЗ ТОРЭКС

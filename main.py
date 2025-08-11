@@ -9,9 +9,9 @@ from json import load
 from typing import Dict, List, Tuple
 import openpyxl
 
-excel_file_path = "files\\Карта данных 2015-2025.xlsx"  # Укажите путь к вашему файлу
+excel_file_path = "files\\данные\\Карта данных 2015-2025.xlsx"  # Укажите путь к вашему файлу
 torex_file_path = (
-    "files\\Регистр ТОРЭКС_прореженный.xlsx"  # Укажите путь к вашему файлу
+    "files\\данные\\Регистр ТОРЭКС_прореженный.xlsx"  # Укажите путь к вашему файлу
 )
 
 
@@ -28,15 +28,15 @@ def check_valve_type(valve: Valve):
 
 blacklist: List[str] = []
 
-with open("files\\names_blacklist.txt", encoding="utf-8") as f:
+with open("files\\settings\\names_blacklist.txt", encoding="utf-8") as f:
     for line in f.readlines():
         blacklist.append(line.strip())
 
 
-with open("files\\names_whitelist.json", encoding="utf-8") as whitelist_file:
+with open("files\\settings\\names_whitelist.json", encoding="utf-8") as whitelist_file:
     whitelist = load(whitelist_file)
 
-with open("files\\defect_list.json", encoding="utf-8") as defect_types_file:
+with open("files\\settings\\defect_list.json", encoding="utf-8") as defect_types_file:
     defect_types = load(defect_types_file)
 
 with open("column_names.json", encoding="utf-8") as column_names_file:
@@ -70,18 +70,23 @@ torex_list = {
 
 valve_type_search_in_torex(valve_list, torex_list)
 file_valves_with_description = open(
-    "files\\valves_with_description.csv", "w", encoding="utf-8"
+    "files\\data\\valves_with_description.csv", "w", encoding="utf-8"
 )
 file_valves_with_type = open("files\\valves_with_type.csv", "w", encoding="utf-8")
 file_valves_without_description = open(
-    "files\\valves_without_description.csv", "w", encoding="utf-8"
+    "files\\data\\valves_without_description.csv", "w", encoding="utf-8"
 )
 file_valves_with_main_type = open(
-    "files\\valves_with_main_type.csv", "w", encoding="utf-8"
+    "files\\data\\valves_with_main_type.csv", "w", encoding="utf-8"
 )
-file_valves_error_type = open("files\\valves_error_type.csv", "w", encoding="utf-8")
-file_not_valves = open("files\\not_valves.csv", "w", encoding="utf-8")
-file_not_valves = open("files\\not_valves.csv", "w", encoding="utf-8")
+file_valves_error_type = open("files\\data\\valves_error_type.csv", "w", encoding="utf-8")
+file_not_valves = open("files\\data\\not_valves.csv", "w", encoding="utf-8")
+file_not_valves = open("files\\data\\not_valves.csv", "w", encoding="utf-8")
+file_result_for_valves_leak  = open("files\\output\\valves_leak.txt", "w", encoding="utf-8")
+file_result_for_valves_crack  = open("files\\output\\valves_crack.txt", "w", encoding="utf-8")
+file_result_for_valves_pass  = open("files\\output\\valves_pass.txt", "w", encoding="utf-8")
+file_result_for_valves_error  = open("files\\output\\valves_error.txt", "w", encoding="utf-8")
+file_result_for_valves_no_defect_type  = open("files\\output\\valves_no_defect_type.txt", "w", encoding="utf-8")
 
 for valve_name in valve_list:
     get_type_from_element_name(valve_list[valve_name], whitelist)
@@ -98,8 +103,31 @@ for valve_name in valve_list:
         print(valve_list[valve_name], file=file_valves_without_description)
     else:
         print(valve_list[valve_name], file=file_not_valves)
-
-
+    if valve_list[valve_name].main_valve_type == "Задвижка":
+        if valve_list[valve_name].commissioning_date is not None:
+            for defect in valve_list[valve_name].defect_list:
+                if defect.defect_date is not None:
+                    try:
+                        if defect.defect_type == None:
+                            print(valve_list[valve_name], file=file_result_for_valves_no_defect_type)
+                            print(defect, file=file_result_for_valves_no_defect_type)
+                        elif defect.defect_type.upper() == "ТЕЧЬ":
+                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_leak)
+                        elif defect.defect_type.upper() == "ТРЕЩИНА":
+                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_crack)
+                        elif defect.defect_type.upper() == "ПРОПУСК":
+                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_pass)
+                    except:
+                        print(valve_list[valve_name], file=file_result_for_valves_error)
+                        print(defect, file=file_result_for_valves_error)
+                        print("error with defect type/time", file=file_result_for_valves_error)
+                else:
+                    print(valve_list[valve_name], file=file_result_for_valves_error)
+                    print("no defect time", file=file_result_for_valves_error)
+        else:
+            print(valve_list[valve_name], file=file_result_for_valves_error)
+            print("no commissioning time", file=file_result_for_valves_error)
+            
 # with open("files\\c.csv", "w",encoding="utf-8") as f:
 #         for valve_name in valve_list:
 #             if valve_list[valve_name].get_descritpion() is not None:

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Defect:
 
     def __init__(
@@ -11,7 +13,13 @@ class Defect:
         defect_type = None
     ):
         self.number = number
-        self.defect_date = defect_date
+        try:
+            if type(defect_date) == datetime:
+                self.defect_date = defect_date
+            else:
+                self.defect_date = datetime.strptime(defect_date, "%d.%m.%Y")
+        except:
+            self.defect_date = None
         self.defect_time = defect_time
         self.defect_description = defect_description
         self.repair_date = repair_date
@@ -19,4 +27,4 @@ class Defect:
         self.defect_type = defect_type
 
     def __str__(self):
-        return f"{self.number};{self.defect_date};{self.defect_type}"
+        return f"{self.number};{self.defect_date};{self.defect_type};"
