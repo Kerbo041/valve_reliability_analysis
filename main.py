@@ -103,8 +103,31 @@ for valve_name in valve_list:
         print(valve_list[valve_name], file=file_valves_without_description)
     else:
         print(valve_list[valve_name], file=file_not_valves)
-
-
+    if valve_list[valve_name].main_valve_type == "Задвижка":
+        if valve_list[valve_name].commissioning_date is not None:
+            for defect in valve_list[valve_name].defect_list:
+                if defect.defect_date is not None:
+                    try:
+                        if defect.defect_type == None:
+                            print(valve_list[valve_name], file=file_result_for_valves_no_defect_type)
+                            print(defect, file=file_result_for_valves_no_defect_type)
+                        elif defect.defect_type.upper() == "ТЕЧЬ":
+                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_leak)
+                        elif defect.defect_type.upper() == "ТРЕЩИНА":
+                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_crack)
+                        elif defect.defect_type.upper() == "ПРОПУСК":
+                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_pass)
+                    except:
+                        print(valve_list[valve_name], file=file_result_for_valves_error)
+                        print(defect, file=file_result_for_valves_error)
+                        print("error with defect type/time", file=file_result_for_valves_error)
+                else:
+                    print(valve_list[valve_name], file=file_result_for_valves_error)
+                    print("no defect time", file=file_result_for_valves_error)
+        else:
+            print(valve_list[valve_name], file=file_result_for_valves_error)
+            print("no commissioning time", file=file_result_for_valves_error)
+            
 # with open("files\\c.csv", "w",encoding="utf-8") as f:
 #         for valve_name in valve_list:
 #             if valve_list[valve_name].get_descritpion() is not None:
