@@ -82,12 +82,12 @@ file_valves_with_main_type = open(
 file_valves_error_type = open("files\\data\\valves_error_type.csv", "w", encoding="utf-8")
 file_not_valves = open("files\\data\\not_valves.csv", "w", encoding="utf-8")
 file_not_valves = open("files\\data\\not_valves.csv", "w", encoding="utf-8")
-file_result_for_valves_leak  = open("files\\output\\valves_leak.txt", "w", encoding="utf-8")
-file_result_for_valves_crack  = open("files\\output\\valves_crack.txt", "w", encoding="utf-8")
-file_result_for_valves_pass  = open("files\\output\\valves_pass.txt", "w", encoding="utf-8")
+# file_result_for_valves_leak  = open("files\\output\\valves_leak.txt", "w", encoding="utf-8")
+# file_result_for_valves_crack  = open("files\\output\\valves_crack.txt", "w", encoding="utf-8")
+# file_result_for_valves_pass  = open("files\\output\\valves_pass.txt", "w", encoding="utf-8")
 file_result_for_valves_error  = open("files\\output\\valves_error.txt", "w", encoding="utf-8")
 file_result_for_valves_no_defect_type  = open("files\\output\\valves_no_defect_type.txt", "w", encoding="utf-8")
-
+files_array_output = {defect_type: open(f"files\\output\\задвижки\\{defect_type}.txt", "w", encoding="utf-8") for defect_type in defect_types}
 for valve_name in valve_list:
     get_type_from_element_name(valve_list[valve_name], whitelist)
     get_defect_type(valve_list[valve_name], defect_types)
@@ -111,12 +111,18 @@ for valve_name in valve_list:
                         if defect.defect_type == None:
                             print(valve_list[valve_name], file=file_result_for_valves_no_defect_type)
                             print(defect, file=file_result_for_valves_no_defect_type)
-                        elif defect.defect_type.upper() == "ТЕЧЬ":
-                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_leak)
-                        elif defect.defect_type.upper() == "ТРЕЩИНА":
-                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_crack)
-                        elif defect.defect_type.upper() == "ПРОПУСК":
-                            print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_pass)
+                            print(defect.defect_description, file=file_result_for_valves_no_defect_type)
+                            print("", file=file_result_for_valves_no_defect_type)
+                        for defect_type in defect_types:
+                            if defect.defect_type.upper() == defect_type.upper():
+                                print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=files_array_output[defect_type])
+                                
+                        # elif defect.defect_type.upper() == "ТЕЧЬ":
+                        #     print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_leak)
+                        # elif defect.defect_type.upper() == "ТРЕЩИНА":
+                        #     print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_crack)
+                        # elif defect.defect_type.upper() == "ПРОПУСК":
+                        #     print((defect.defect_date - valve_list[valve_name].commissioning_date).days, file=file_result_for_valves_pass)
                     except:
                         print(valve_list[valve_name], file=file_result_for_valves_error)
                         print(defect, file=file_result_for_valves_error)
