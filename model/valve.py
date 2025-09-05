@@ -3,22 +3,6 @@ from model.torex_record import TorexRecord
 from typing import Dict, List, Tuple
 from datetime import datetime
 
-class Defect:
-
-    def __init__(
-        self,
-        defect_date=None,
-        defect_time=None,
-        defect_description=None,
-        repair_date=None,
-        repair_time=None,
-    ):
-        self.defect_date = defect_date
-        self.defect_time = defect_time
-        self.defect_description = defect_description
-        self.repair_date = repair_date
-        self.repair_time = repair_time
-
 
 class Valve:
 
@@ -36,6 +20,7 @@ class Valve:
         valve_name_operational=None,  # ИЗ ТОРЭКС
         valve_name_plant=None,  # ИЗ ТОРЭКС
         full_valve_name=None,  # ИЗ ТОРЭКС
+        manufacturer_defined=None # Для дальнейшего определения
     ):
         self.valve_name = valve_name
         self.manufacturer = manufacturer
@@ -53,6 +38,7 @@ class Valve:
         self.valve_name_plant = valve_name_plant  # ИЗ ТОРЭКС
         self.full_valve_name = full_valve_name  # ИЗ ТОРЭКС
         self.defect_list: List[Defect] = []
+        self.manufacturer_defined = manufacturer_defined
 
     def add_defect(self, defect: Defect):
         self.defect_list.append(defect)
@@ -67,16 +53,20 @@ class Valve:
     def set_block_number(self, block_number):
         if block_number == "3; 4":
             self.block_number = "3-4"
+        if block_number == "6; 7" or block_number == "6" or block_number == "7":
+            self.block_number = "6-7"
         else:
             self.block_number = block_number
-
-    def __str__(self):
+    def to_str_with_defects(self):
         output = f"{self.valve_name};{self.manufacturer};type: {self.valve_type};main type: {self.main_valve_type};description: {self.get_descritpion()};element_name: {self.element_name};{self.full_valve_name};{self.get_block_number()};{self.commissioning_date};"
         # if self.description:
         #     output += f"description:{self.description};"
         for iter, defect in enumerate(self.defect_list):
             output += f"{iter}: {defect}"
         return output
+    def __str__(self):
+        output = f"{self.valve_name};{self.full_valve_name};{self.get_block_number()};{self.valve_type};{self.main_valve_type}"
+
 
     def __eq__(self, value):
         if self.valve_name == value:
