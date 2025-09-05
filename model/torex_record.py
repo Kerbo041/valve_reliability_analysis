@@ -18,7 +18,8 @@ class TorexRecord:
         self.valve_type_short = valve_type_short
         self.commissioning_date = commissioning_date
     def __str__(self):
-        return  f"{self.full_valve_name};{self.description};{self.block_number};{self.commissioning_date};"
+        # return  f"{self.full_valve_name};{self.description};{self.block_number};{self.commissioning_date};"
+        return  f"{self.full_valve_name};{self.valve_name_plant};{self.valve_name_operational};"
     
     def get_block_number(self):
         return self.block_number.replace("БЛОК ", "")

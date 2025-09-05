@@ -105,6 +105,9 @@ def calculate_defect_intensivity(
 
         # Сохранение и отображение
         plt.tight_layout()
+        # dir_name = os.path.dirname(output_file_path)
+        # file_name = os.path.basename(output_file_path)
+        # output_file_path = os.path.join(dir_name, f"{len(data)}_{file_name}")
         plt.savefig(output_file_path)
         # print(f"Результат сохранён в файл: {output_file}")
         # plt.show()
