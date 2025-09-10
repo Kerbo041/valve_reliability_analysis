@@ -12,7 +12,7 @@ import openpyxl
 import os
 from scripts.get_analyzis_for_filtered_1 import get_analyzis_for_filtered_1
 from scripts.get_analyzis_for_filtered_2 import get_analyzis_for_filtered_2
-
+from scripts.select_valves_by_type import select_valves_by_type
 # ===== КОНФИГУРАЦИЯ =====
 excel_file_path = (
     "files\\данные\\Карта данных 2015-2025.xlsx"  # Укажите путь к вашему файлу
@@ -125,27 +125,16 @@ for record in torex_list:
 valve_type_search_in_torex(valve_list, torex_list)
 
 
-file_result_for_valves_error = create_file("files\\output\\valves_error.txt")
-file_result_for_valves_no_defect_type = create_file(
-    "files\\output\\valves_no_defect_type.txt"
-)
-files_array_output = {
-    valve_type: {
-        defect_type: create_file(f"files\\output\\{valve_type}\\{defect_type}.txt")
-        for defect_type in defect_types
-    }
-    for valve_type in types_whitelist
-}
-defect_array_output = {
-    valve_type: {defect_type: [] for defect_type in defect_types}
-    for valve_type in types_whitelist
-}
+
+
 
 for valve_name in valve_list:
     get_type_from_element_name(valve_list[valve_name], types_whitelist)
     get_manufacturer_from_valve(valve_list[valve_name], manufacturers_list)
     get_defect_type(valve_list[valve_name], defect_types)
     get_defect_class(valve_list[valve_name], defect_classes)
+
+select_valves_by_type(valve_list, defect_types, types_whitelist)
 
 get_analyzis_for_filtered_1(
     valve_list, NUMBER_OF_INTERVALS, NUMBER_OF_ITEMS, CONFIDENCE_LEVEL
@@ -154,230 +143,3 @@ get_analyzis_for_filtered_2(
     valve_list, NUMBER_OF_INTERVALS, NUMBER_OF_ITEMS, CONFIDENCE_LEVEL
 )
 
-# file_valves_all = create_file("files\\data\\all.csv")
-
-# for valve_name in valve_list:
-#     print(valve_list[valve_name], file=file_valves_all)
-
-# --------------------------------------------------------------------------------------
-# Вывод данных о найденных единицах оборудования и результатах их обработки
-# --------------------------------------------------------------------------------------
-#
-# file_valves_with_description = open("files\\data\\valves_with_description.csv", "w", encoding="utf-8")
-# file_valves_with_type = open("files\\valves_with_type.csv", "w", encoding="utf-8")
-# file_valves_without_description = open("files\\data\\valves_without_description.csv", "w", encoding="utf-8")
-# file_valves_with_main_type = open("files\\data\\valves_with_main_type.csv", "w", encoding="utf-8")
-# file_not_valves = create_file("files\\data\\not_valves.csv")
-# file_valves_error_type = create_file("files\\data\\valves_error_type.csv")
-#
-# for valve_name in valve_list:
-#     # if check_valve_type(valve_list[valve_name]):
-#     #     print(valve_list[valve_name], file=file_valves_error_type)
-#     if valve_list[valve_name].get_descritpion() != "":
-#         print(valve_list[valve_name], file=file_valves_with_description)
-#     elif valve_list[valve_name].valve_type is not None:
-#         print(valve_list[valve_name], file=file_valves_with_type)
-#     elif valve_list[valve_name].main_valve_type is not None:
-#         print(valve_list[valve_name], file=file_valves_with_main_type)
-#     elif filter_valves_by_name(valve_list[valve_name], types_blacklist):
-#         print(valve_list[valve_name], file=file_valves_without_description)
-#     else:
-#         print(valve_list[valve_name], file=file_not_valves)
-# --------------------------------------------------------------------------------------
-
-# --------------------------------------------------------------------------------------
-# Выбор задвижек по типу, по производителю и по производителю (с определением конкретного)
-# --------------------------------------------------------------------------------------
-# manufacturers_data = {}
-# manufacturers_defined_data = {}
-# manufacturers_valve_type_data = {}
-# for valve_name in valve_list:
-#     if (
-#         valve_list[valve_name].commissioning_date is not None
-#         and valve_list[valve_name].main_valve_type is not None
-#     ):
-#         for defect in valve_list[valve_name].defect_list:
-#             if defect.defect_date is not None:
-#                 try:
-#                     value = (
-#                         defect.defect_date - valve_list[valve_name].commissioning_date
-#                     ).days
-#                     if valve_list[valve_name].manufacturer is not None:
-#                         if (
-#                             valve_list[valve_name].manufacturer
-#                             not in manufacturers_data
-#                         ):
-#                             manufacturers_data[valve_list[valve_name].manufacturer] = []
-#                         manufacturers_data[valve_list[valve_name].manufacturer].append(
-#                             value
-#                         )
-#                         append_to_file(
-#                             os.path.join(
-#                                 output_manufacturer_folder_path,
-#                                 valve_list[valve_name].manufacturer,
-#                             ),
-#                             value,
-#                         )
-#                     if valve_list[valve_name].manufacturer_defined is not None:
-#                         if (
-#                             valve_list[valve_name].manufacturer_defined
-#                             not in manufacturers_defined_data
-#                         ):
-#                             manufacturers_defined_data[
-#                                 valve_list[valve_name].manufacturer_defined
-#                             ] = []
-#                         if valve_list[valve_name].valve_type is not None:
-#                             if (
-#                                 valve_list[valve_name].manufacturer_defined
-#                                 not in manufacturers_valve_type_data
-#                             ):
-#                                 manufacturers_valve_type_data[
-#                                     valve_list[valve_name].manufacturer_defined
-#                                 ] = {}
-#                             if (
-#                                 valve_list[valve_name].valve_type
-#                                 not in manufacturers_valve_type_data
-#                             ):
-#                                 manufacturers_valve_type_data[
-#                                     valve_list[valve_name].manufacturer_defined
-#                                 ][valve_list[valve_name].valve_type] = []
-#                             manufacturers_valve_type_data[
-#                                 valve_list[valve_name].manufacturer_defined
-#                             ][valve_list[valve_name].valve_type].append(value)
-#                         manufacturers_defined_data[
-#                             valve_list[valve_name].manufacturer_defined
-#                         ].append(value)
-#                         append_to_file(
-#                             os.path.join(
-#                                 output_manufacturer_defined_folder_path,
-#                                 valve_list[valve_name].manufacturer_defined,
-#                             ),
-#                             value,
-#                         )
-#                     if defect.defect_type == None:
-#                         print(
-#                             valve_list[valve_name],
-#                             file=file_result_for_valves_no_defect_type,
-#                         )
-#                         print(defect, file=file_result_for_valves_no_defect_type)
-#                         print(
-#                             defect.defect_description,
-#                             file=file_result_for_valves_no_defect_type,
-#                         )
-#                         print("", file=file_result_for_valves_no_defect_type)
-#                     for defect_type in defect_types:
-#                         if defect.defect_type.upper() == defect_type.upper():
-#                             print(
-#                                 value,
-#                                 file=files_array_output[
-#                                     valve_list[valve_name].main_valve_type
-#                                 ][defect_type],
-#                             )
-#                             defect_array_output[valve_list[valve_name].main_valve_type][
-#                                 defect_type
-#                             ].append(value)
-#                 except Exception as exception:
-#                     pass
-#                     print(valve_list[valve_name], file=file_result_for_valves_error)
-#                     print(defect, file=file_result_for_valves_error)
-#                     print(
-#                         "error with defect type/time", file=file_result_for_valves_error
-#                     )
-#             else:
-#                 print(valve_list[valve_name], file=file_result_for_valves_error)
-#                 print("no defect time", file=file_result_for_valves_error)
-#     else:
-#         print(valve_list[valve_name], file=file_result_for_valves_error)
-#         print("no commissioning time", file=file_result_for_valves_error)
-# --------------------------------------------------------------------------------------
-
-# --------------------------------------------------------------------------------------
-# Выполнение статистического анализа для разных типов арматур и дефектов
-# --------------------------------------------------------------------------------------
-# for valve_type in defect_array_output:
-#     for defect_type in defect_array_output[valve_type]:
-#         output_file_path = os.path.join(result_folder_path, valve_type)
-#         if not os.path.isdir(output_file_path):
-#             os.makedirs(output_file_path, exist_ok=True)
-#         output_file_path = os.path.join(
-#             output_file_path, f"{valve_type}_{defect_type}_analysis.png"
-#         )
-#         calculate_defect_intensivity(
-#             defect_array_output[valve_type][defect_type],
-#             valve_type,
-#             defect_type,
-#             output_file_path,
-#             NUMBER_OF_INTERVALS,
-#             NUMBER_OF_ITEMS,
-#             CONFIDENCE_LEVEL,
-#         )
-# --------------------------------------------------------------------------------------
-
-
-# --------------------------------------------------------------------------------------
-# Выполнение статистического анализа для разных производителей
-# --------------------------------------------------------------------------------------
-# for manufacturer in manufacturers_data:
-#     result_file_path = result_manufacturer_folder_path
-#     if not os.path.isdir(result_file_path):
-#         os.makedirs(result_file_path, exist_ok=True)
-#     result_file_path = os.path.join(
-#         result_file_path, f"{manufacturer}_analysis.png"
-#     )
-#     valve_type = None
-#     defect_type = None
-#     calculate_defect_intensivity(
-#         manufacturers_data[manufacturer],
-#         valve_type,
-#         defect_type,
-#         result_file_path,
-#         NUMBER_OF_INTERVALS,
-#         NUMBER_OF_ITEMS,
-#         CONFIDENCE_LEVEL,
-#     )
-# --------------------------------------------------------------------------------------
-
-
-# --------------------------------------------------------------------------------------
-# Выполнение статистического анализа для разных производителей (распознанных из сырой таблицы)
-# --------------------------------------------------------------------------------------
-# for manufacturer in manufacturers_defined_data:
-#     result_file_path = result_manufacturer_defined_folder_path
-#     if not os.path.isdir(result_file_path):
-#         os.makedirs(result_file_path, exist_ok=True)
-#     result_file_path = os.path.join(
-#         result_file_path, f"{manufacturer}_analysis.png"
-#     )
-#     calculate_defect_intensivity(
-#         manufacturers_defined_data[manufacturer],
-#         valve_type,
-#         defect_type,
-#         result_file_path,
-#         NUMBER_OF_INTERVALS,
-#         NUMBER_OF_ITEMS,
-#         CONFIDENCE_LEVEL,
-#     )
-# --------------------------------------------------------------------------------------
-
-
-# --------------------------------------------------------------------------------------
-# Выполнение статистического анализа для разных производителей (распознанных из сырой таблицы) по типам арматуры
-# --------------------------------------------------------------------------------------
-# for manufacturer in manufacturers_valve_type_data:
-#     for valve_type in manufacturers_valve_type_data[manufacturer]:
-#         output_file_path = os.path.join(result_manufacturer_valve_type_folder_path, manufacturer)
-#         if not os.path.isdir(output_file_path):
-#             os.makedirs(output_file_path, exist_ok=True)
-#         output_file_path = os.path.join(
-#             output_file_path, f"{valve_type}_analysis.png"
-#         )
-#         calculate_defect_intensivity(
-#             manufacturers_valve_type_data[manufacturer][valve_type],
-#             valve_type,
-#             defect_type,
-#             output_file_path,
-#             NUMBER_OF_INTERVALS,
-#             NUMBER_OF_ITEMS,
-#             CONFIDENCE_LEVEL,
-#         )
-# --------------------------------------------------------------------------------------
