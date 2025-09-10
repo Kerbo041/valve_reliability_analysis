@@ -24,3 +24,11 @@ def get_defect_type(valve: Valve, defect_names: Dict[str, List[str]]):
                             defect_type=defect_type
                         )
             valve.add_defect(new_defect)
+
+
+def get_defect_class(valve: Valve, defect_classes: Dict[str, List[str]]):
+    for defect in valve.defect_list:
+        for defect_class in defect_classes:
+            for defect_type in defect_classes[defect_class]:
+                if defect.defect_type is not None and defect.defect_class is None and defect.defect_type.upper().find(defect_type.upper()) != -1:
+                    defect.defect_class = defect_class
