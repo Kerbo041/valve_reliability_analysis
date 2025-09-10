@@ -112,5 +112,6 @@ def calculate_defect_intensivity(
         # print(f"Результат сохранён в файл: {output_file}")
         # plt.show()
         plt.close()
+        return avg_failure_rate, regression_line_slope, regression_line_intercept
     except Exception as exception:
         pass
