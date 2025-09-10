@@ -66,6 +66,7 @@ class Valve:
         return output
     def __str__(self):
         output = f"{self.valve_name};{self.full_valve_name};{self.get_block_number()};{self.valve_type};{self.main_valve_type}"
+        return output
 
 
     def __eq__(self, value):
