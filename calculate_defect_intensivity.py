@@ -11,6 +11,7 @@ def calculate_defect_intensivity(
     number_of_intervals,
     number_of_items,
     confidence_level=0.9,
+    standart_intensivity = None
 ):
     try:
         # if len(data) < 50:
@@ -76,6 +77,14 @@ def calculate_defect_intensivity(
             linestyle="-",
             label=f"Средняя интенсивность: {avg_failure_rate:e}",
         )
+        if standart_intensivity:
+            # Интенсивность по ВАБ
+            plt.axhline(
+                y=standart_intensivity,
+                color="tab:orange",
+                linestyle="-",
+                label=f"Интенсивность по ВАБ: {standart_intensivity:e}",
+            )
 
         # Линейная аппроксимация
         plt.plot(
