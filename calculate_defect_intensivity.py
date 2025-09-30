@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 import os
+from output_statistic_analyzis_to_csv import output_statistic_analyzis_to_csv
+
 
 def calculate_defect_intensivity(
     data,
@@ -11,7 +13,7 @@ def calculate_defect_intensivity(
     number_of_intervals,
     number_of_items,
     confidence_level=0.9,
-    standart_intensivity = None
+    standart_intensivity=None,
 ):
     try:
         # if len(data) < 50:
@@ -56,6 +58,7 @@ def calculate_defect_intensivity(
         stderr_FR = np.sqrt(s2_FR)
         t_value = stats.t.ppf((1 + confidence_level) / 2, df=number_of_intervals - 2)
         сonfidence_interval_upper_border = regression_line + t_value * stderr_FR
+        сonfidence_interval_lower_border = regression_line - t_value * stderr_FR
 
         # Построение графика
         plt.figure(figsize=(12, 8))
@@ -121,6 +124,22 @@ def calculate_defect_intensivity(
         # print(f"Результат сохранён в файл: {output_file}")
         # plt.show()
         plt.close()
+
+        output_statistic_analyzis_to_csv(
+            output_file_path,
+            data,
+            avg_failure_rate,
+            interval_width,
+            intervals_borders,
+            regression_line_slope,
+            regression_line_intercept,
+            failure_rates,
+            counts_in_intervals,
+            midpoints_of_intervals,
+            сonfidence_interval_upper_border,
+            сonfidence_interval_lower_border,
+        )
+
         return avg_failure_rate, regression_line_slope, regression_line_intercept
     except Exception as exception:
-        pass
+        raise
