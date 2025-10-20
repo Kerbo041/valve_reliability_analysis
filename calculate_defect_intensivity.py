@@ -14,6 +14,7 @@ def calculate_defect_intensivity(
     number_of_items,
     confidence_level=0.9,
     standart_intensivity=None,
+    graph_width=5.9055,
 ):
     try:
         # if len(data) < 50:
@@ -61,7 +62,7 @@ def calculate_defect_intensivity(
         сonfidence_interval_lower_border = regression_line - t_value * stderr_FR
 
         # Построение графика
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(graph_width, graph_width / 1.5))
 
         # Гистограмма интенсивности отказов
         plt.bar(
@@ -120,7 +121,7 @@ def calculate_defect_intensivity(
         # dir_name = os.path.dirname(output_file_path)
         # file_name = os.path.basename(output_file_path)
         # output_file_path = os.path.join(dir_name, f"{len(data)}_{file_name}")
-        plt.savefig(output_file_path)
+        plt.savefig(output_file_path, dpi=300, bbox_inches="tight")
         # print(f"Результат сохранён в файл: {output_file}")
         # plt.show()
         plt.close()
