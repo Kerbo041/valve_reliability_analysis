@@ -95,7 +95,7 @@ def get_analyzis_for_filtered_3(
         for block_number in filtered_arrays[valve_type]:
             for defect_class in filtered_arrays[valve_type][block_number]:
                 file_name = (
-                    f"{valve_type}, блок {block_number} НВАЭС, {defect_class}.png"
+                    f"{valve_type}, блок {block_number} НВАЭС, {defect_class}.jpg"
                 )
                 
                 output_file_path = os.path.join(base_path, file_name)
