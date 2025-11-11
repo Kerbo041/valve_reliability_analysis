@@ -32,6 +32,8 @@ def avg(list:List):
 def output_statistic_analyzis_to_csv(
     file_name,
     data,
+    number_of_items,
+    total_failures,
     avg_failure_rate,
     interval_width,
     intervals_borders,
@@ -42,26 +44,39 @@ def output_statistic_analyzis_to_csv(
     midpoints_of_intervals,
     сonfidence_interval_upper_border,
     сonfidence_interval_lower_border,
+    p_value,
+    r_value,
+    x2_value
 ):
     count_of_defects = len(data)
     name_without_ext = os.path.splitext(file_name)[0]
     csv_file_data = f"{os.path.basename(name_without_ext)}\n"
     csv_file_data += f"кол-во дефектов;{count_of_defects}\n"
+    csv_file_data += f"кол-во единиц оборудования;{number_of_items}\n"
     csv_file_data += f"средняя интенсивность отказов;{avg_failure_rate}\n"
     csv_file_data += f"параметры интерполяции;a;{regression_line_slope}\n"
     csv_file_data += f";b;{regression_line_intercept}\n"
-    interval_borders_table = [[], [], [], []]
+    csv_file_data += f";p_value;{p_value}\n"
+    csv_file_data += f";r_value;{r_value}\n"
+    
+    interval_borders_table = [[], [], [], [], [], [], []]
     for iter in range(len(intervals_borders) - 1):
         interval_borders_table[0].append(iter + 1)
         interval_borders_table[1].append(intervals_borders[iter])
         interval_borders_table[2].append(intervals_borders[iter + 1])
-        interval_borders_table[3].append(counts_in_intervals[iter])
+        interval_borders_table[3].append(midpoints_of_intervals[iter])
+        interval_borders_table[4].append(сonfidence_interval_lower_border[iter])
+        interval_borders_table[5].append(сonfidence_interval_upper_border[iter])
+        interval_borders_table[6].append(counts_in_intervals[iter])
     table_in_csv = add_table_to_csv(
         interval_borders_table,
         [
             "Номер интервала",
             "Граница нижняя, сут.",
             "Граница верхняя, сут.",
+            "Середина интервала, сут.",
+            "Доверительная граница нижняя, сут.(-1)",
+            "Доверительная граница верхняя, сут.(-1)",
             "Кол-во отказов заданного типа",
         ],
         None,

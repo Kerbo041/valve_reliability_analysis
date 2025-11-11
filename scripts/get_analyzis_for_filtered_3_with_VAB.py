@@ -11,7 +11,16 @@ def get_analyzis_for_filtered_3(
     NUMBER_OF_ITEMS,
     CONFIDENCE_LEVEL,
     vab,
-    base_path="files//result_filtered_with_vab//"):
+    base_path="files//result_filtered_with_vab//",
+):
+    valves_filtered = {
+        "Задвижки": {
+            "3-4": [],
+            "5": [],
+            "6-7": [],
+        },
+        "Вентили запорные": {"3-4": [], "5": [], "6-7": []},
+    }
     filtered_arrays = {
         "Задвижки": {
             "3-4": {
@@ -73,6 +82,9 @@ def get_analyzis_for_filtered_3(
                             filtered_arrays["Задвижки"][
                                 valve_list[valve_name].get_block_number()
                             ][defect.defect_class].append(value)
+                            valves_filtered["Задвижки"][
+                                valve_list[valve_name].get_block_number()
+                            ].append(valve_list[valve_name])
                         if (
                             valve_list[valve_name].valve_type == "Вентиль запорный"
                             or valve_list[valve_name].valve_type == "Клапан запорный"
@@ -81,15 +93,21 @@ def get_analyzis_for_filtered_3(
                             filtered_arrays["Вентили запорные"][
                                 valve_list[valve_name].get_block_number()
                             ][defect.defect_class].append(value)
+                            valves_filtered["Вентили запорные"][
+                                valve_list[valve_name].get_block_number()
+                            ].append(valve_list[valve_name])
                     except Exception as exception:
                         pass
-    
+
     numbers_file_path = os.path.join(base_path, "result_numbers.csv")
     directory_path = os.path.dirname(numbers_file_path)
     if not os.path.isdir(directory_path):
         os.makedirs(directory_path, exist_ok=True)
     numbers_file = open(numbers_file_path, "w")
-    print(f"тип;средняя интенсивность;коэффициент аппроксимации a;коэффициент аппроксимации b", file = numbers_file)
+    print(         
+        f"тип;средняя интенсивность;кол-во единиц обороудования;кол-во отказов;коэффициент аппроксимации a;коэффициент аппроксимации b;p_value;r_value",
+        file=numbers_file,
+    )
     defect_type = None
     for valve_type in filtered_arrays:
         for block_number in filtered_arrays[valve_type]:
@@ -97,8 +115,11 @@ def get_analyzis_for_filtered_3(
                 file_name = (
                     f"{valve_type}, блок {block_number} НВАЭС, {defect_class}.jpg"
                 )
-                
-                output_file_path = os.path.join(base_path, file_name)
+
+                output_file_path = os.path.join(
+                    base_path, os.path.splitext(file_name)[0]
+                )
+                output_file_path = os.path.join(output_file_path, file_name)
                 directory_path = os.path.dirname(output_file_path)
                 if not os.path.isdir(directory_path):
                     os.makedirs(directory_path, exist_ok=True)
@@ -108,10 +129,30 @@ def get_analyzis_for_filtered_3(
                     defect_type,
                     output_file_path,
                     NUMBER_OF_INTERVALS,
-                    NUMBER_OF_ITEMS,
+                    len(valves_filtered[valve_type][block_number]),
                     CONFIDENCE_LEVEL,
-                    vab[block_number]
+                    vab[block_number],
                 )
                 if result is not None:
-                    avg_failure_rate, regression_line_slope, regression_line_intercept = result
-                    print(f"{file_name};{avg_failure_rate};{regression_line_slope};{regression_line_intercept}", file = numbers_file)
+                    (
+                        data,
+                        number_of_items,
+                        total_failures,
+                        avg_failure_rate,
+                        interval_width,
+                        intervals_borders,
+                        regression_line_slope,
+                        regression_line_intercept,
+                        failure_rates,
+                        counts_in_intervals,
+                        midpoints_of_intervals,
+                        сonfidence_interval_upper_border,
+                        сonfidence_interval_lower_border,
+                        p_value,
+                        r_value,
+                        x2_value,
+                    ) = result
+                    print(
+                        f"{file_name};{avg_failure_rate};{number_of_items};{total_failures}{regression_line_slope};{regression_line_intercept};{p_value};{r_value}",
+                        file=numbers_file,
+                    )

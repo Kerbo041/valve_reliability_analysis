@@ -13,7 +13,9 @@ import os
 from scripts.get_analyzis_for_filtered_1 import get_analyzis_for_filtered_1
 from scripts.get_analyzis_for_filtered_2 import get_analyzis_for_filtered_2
 from scripts.get_analyzis_for_filtered_3_with_VAB import get_analyzis_for_filtered_3
+from scripts.statistic_analyzis_for_manufacturers_specified_and_type import *
 from scripts.select_valves_by_type import select_valves_by_type
+
 # ===== КОНФИГУРАЦИЯ =====
 excel_file_path = (
     "files\\данные\\Карта данных 2015-2025.xlsx"  # Укажите путь к вашему файлу
@@ -32,7 +34,7 @@ result_folder_path = "files\\result"
 result_manufacturer_folder_path = "files\\result_manufacturer"
 output_manufacturer_folder_path = "files\\output_manufacturer"
 result_manufacturer_defined_folder_path = "files\\result_manufacturer_defined"
-result_manufacturer_valve_type_folder_path = "files\\result_manufacturer_valve_type"
+result_manufacturer_valve_type_folder_path = "files\\result_manufacturer_valve_type_new"
 output_manufacturer_defined_folder_path = "files\\output_manufacturer_defined"
 NUMBER_OF_INTERVALS = 10  # Количество интервалов разбиения
 NUMBER_OF_ITEMS = 2181  # Общее количество наблюдаемых изделий
@@ -40,9 +42,9 @@ CONFIDENCE_LEVEL = 0.9  # Уровень доверия (P=0.9)
 
 
 vab = {
-    "3-4": (2.73+8.95) * 24 * (10**(-7)),
-    "5": (3.0+1.78) * 24 * (10**(-6)),
-    "6-7": (3.0+1.78) * 24 * (10**(-6))
+    "3-4": (2.73 + 8.95) * 24 * (10 ** (-7)),
+    "5": (3.0 + 1.78) * 24 * (10 ** (-6)),
+    "6-7": (3.0 + 1.78) * 24 * (10 ** (-6)),
 }
 # =========================
 
@@ -128,12 +130,9 @@ torex_list = {
 torex_errors_file = open("files//torex_errors.csv", "w", encoding="utf-8")
 for record in torex_list:
     if torex_list[record].valve_name_plant != torex_list[record].valve_name_operational:
-        print(torex_list[record], file = torex_errors_file)
+        print(torex_list[record], file=torex_errors_file)
 
 valve_type_search_in_torex(valve_list, torex_list)
-
-
-
 
 
 for valve_name in valve_list:
@@ -142,7 +141,7 @@ for valve_name in valve_list:
     get_defect_type(valve_list[valve_name], defect_types)
     get_defect_class(valve_list[valve_name], defect_classes)
 
-select_valves_by_type(valve_list, defect_types, types_whitelist)
+# select_valves_by_type(valve_list, defect_types, types_whitelist)
 
 # get_analyzis_for_filtered_1(
 #     valve_list, NUMBER_OF_INTERVALS, NUMBER_OF_ITEMS, CONFIDENCE_LEVEL
@@ -155,3 +154,17 @@ get_analyzis_for_filtered_3(
     valve_list, NUMBER_OF_INTERVALS, NUMBER_OF_ITEMS, CONFIDENCE_LEVEL, vab
 )
 
+valve_by_manufacturers_list = {}
+for valve_name in valve_list:
+    if not valve_list[valve_name].manufacturer_defined in valve_by_manufacturers_list:
+        valve_by_manufacturers_list[valve_list[valve_name].manufacturer_defined] = {}
+        
+    valve_by_manufacturers_list[valve_list[valve_name].manufacturer_defined][valve_name] = (valve_list[valve_name])
+statistic_analyzis_for_manufacturers_specified_and_type(
+    valve_by_manufacturers_list,
+    result_manufacturer_valve_type_folder_path,
+    NUMBER_OF_INTERVALS,
+    NUMBER_OF_ITEMS,
+    CONFIDENCE_LEVEL,
+    vab,
+)

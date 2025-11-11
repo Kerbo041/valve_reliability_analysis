@@ -96,7 +96,7 @@ def calculate_defect_intensivity(
             regression_line,
             "g--",
             linewidth=2,
-            label=f"Аппроксимация: y = {regression_line_slope:e}x + {regression_line_intercept:e}",
+            label=f"Аппроксимация: y = {regression_line_slope:e}x + {regression_line_intercept:e}\nP-уровень: {p_value:.2f}",
         )
 
         # Верхняя доверительная граница
@@ -125,10 +125,11 @@ def calculate_defect_intensivity(
         # print(f"Результат сохранён в файл: {output_file}")
         # plt.show()
         plt.close()
-
-        output_statistic_analyzis_to_csv(
-            output_file_path,
+        x2_value = 0
+        statistic = (            
             data,
+            number_of_items,
+            total_failures,
             avg_failure_rate,
             interval_width,
             intervals_borders,
@@ -139,8 +140,29 @@ def calculate_defect_intensivity(
             midpoints_of_intervals,
             сonfidence_interval_upper_border,
             сonfidence_interval_lower_border,
+            p_value,
+            r_value,
+            x2_value)
+        output_statistic_analyzis_to_csv(
+            output_file_path,
+            data,
+            number_of_items,
+            total_failures,
+            avg_failure_rate,
+            interval_width,
+            intervals_borders,
+            regression_line_slope,
+            regression_line_intercept,
+            failure_rates,
+            counts_in_intervals,
+            midpoints_of_intervals,
+            сonfidence_interval_upper_border,
+            сonfidence_interval_lower_border,
+            p_value,
+            r_value,
+            x2_value
         )
 
-        return avg_failure_rate, regression_line_slope, regression_line_intercept
+        return statistic
     except Exception as exception:
-        raise
+        pass
