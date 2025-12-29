@@ -29,4 +29,4 @@ class Defect:
         self.defect_class = defect_class
 
     def __str__(self):
-        return f"{self.number};{self.defect_date};{self.defect_type};"
+        return f"{self.defect_date};{self.defect_description};{self.defect_type};{self.defect_class};"

@@ -66,46 +66,63 @@ def get_analyzis_for_filtered_3(
     # "Задвижки, блок 6-7 НВОАЭС, отказы типа ОЗ объединённые": gatevalves_6_7_block_oz,
 
     for valve_name in valve_list:
-        if (
-            valve_list[valve_name].commissioning_date is not None
-            and valve_list[valve_name].main_valve_type is not None
-        ):
-            for defect in valve_list[valve_name].defect_list:
-                if defect.defect_date is not None:
-                    try:
-                        value = (
-                            defect.defect_date
-                            - valve_list[valve_name].commissioning_date
-                        ).days
+        try:
+            if (
+                valve_list[valve_name].commissioning_date is not None
+                and valve_list[valve_name].main_valve_type is not None
+            ):
+                if valve_list[valve_name].main_valve_type == "Задвижка":
 
-                        if valve_list[valve_name].main_valve_type == "Задвижка":
-                            filtered_arrays["Задвижки"][
-                                valve_list[valve_name].get_block_number()
-                            ][defect.defect_class].append(value)
-                            valves_filtered["Задвижки"][
-                                valve_list[valve_name].get_block_number()
-                            ].append(valve_list[valve_name])
-                        if (
-                            valve_list[valve_name].valve_type == "Вентиль запорный"
-                            or valve_list[valve_name].valve_type == "Клапан запорный"
-                            or valve_list[valve_name].valve_type == "Клапан сильфонный"
-                        ):
-                            filtered_arrays["Вентили запорные"][
-                                valve_list[valve_name].get_block_number()
-                            ][defect.defect_class].append(value)
-                            valves_filtered["Вентили запорные"][
-                                valve_list[valve_name].get_block_number()
-                            ].append(valve_list[valve_name])
-                    except Exception as exception:
-                        pass
+                    valves_filtered["Задвижки"][
+                        valve_list[valve_name].get_block_number()
+                    ].append(valve_list[valve_name])
+                if (
+                    valve_list[valve_name].valve_type == "Вентиль запорный"
+                    or valve_list[valve_name].valve_type == "Клапан запорный"
+                    or valve_list[valve_name].valve_type == "Клапан сильфонный"
+                ):
+
+                    valves_filtered["Вентили запорные"][
+                        valve_list[valve_name].get_block_number()
+                    ].append(valve_list[valve_name])
+                for defect in valve_list[valve_name].defect_list:
+                    if defect.defect_date is not None:
+                        try:
+                            value = (
+                                defect.defect_date
+                                - valve_list[valve_name].commissioning_date
+                            ).days
+
+                            if valve_list[valve_name].main_valve_type == "Задвижка":
+                                filtered_arrays["Задвижки"][
+                                    valve_list[valve_name].get_block_number()
+                                ][defect.defect_class].append(value)
+                                # valves_filtered["Задвижки"][
+                                #     valve_list[valve_name].get_block_number()
+                                # ].append(valve_list[valve_name])
+                            if (
+                                valve_list[valve_name].valve_type == "Вентиль запорный"
+                                or valve_list[valve_name].valve_type == "Клапан запорный"
+                                or valve_list[valve_name].valve_type == "Клапан сильфонный"
+                            ):
+                                filtered_arrays["Вентили запорные"][
+                                    valve_list[valve_name].get_block_number()
+                                ][defect.defect_class].append(value)
+                                # valves_filtered["Вентили запорные"][
+                                #     valve_list[valve_name].get_block_number()
+                                # ].append(valve_list[valve_name])
+                        except Exception as exception:
+                            pass
+        except Exception as exception:
+            print(exception)
 
     numbers_file_path = os.path.join(base_path, "result_numbers.csv")
     directory_path = os.path.dirname(numbers_file_path)
     if not os.path.isdir(directory_path):
         os.makedirs(directory_path, exist_ok=True)
     numbers_file = open(numbers_file_path, "w")
-    print(         
-        f"тип;средняя интенсивность;кол-во единиц обороудования;кол-во отказов;коэффициент аппроксимации a;коэффициент аппроксимации b;p_value;r_value",
+    print(
+        f"тип;средняя интенсивность;кол-во единиц обороудования;кол-во отказов;коэффициент аппроксимации k;коэффициент аппроксимации x;p_value;r_value",
         file=numbers_file,
     )
     defect_type = None
@@ -120,9 +137,9 @@ def get_analyzis_for_filtered_3(
                     base_path, os.path.splitext(file_name)[0]
                 )
                 output_file_path = os.path.join(output_file_path, file_name)
-                directory_path = os.path.dirname(output_file_path)
-                if not os.path.isdir(directory_path):
-                    os.makedirs(directory_path, exist_ok=True)
+                # directory_path = os.path.dirname(output_file_path)
+                # if not os.path.isdir(directory_path):
+                #     os.makedirs(directory_path, exist_ok=True)
                 result = calculate_defect_intensivity(
                     filtered_arrays[valve_type][block_number][defect_class],
                     valve_type,
@@ -131,7 +148,7 @@ def get_analyzis_for_filtered_3(
                     NUMBER_OF_INTERVALS,
                     len(valves_filtered[valve_type][block_number]),
                     CONFIDENCE_LEVEL,
-                    vab[block_number],
+                    vab[valve_type][block_number],
                 )
                 if result is not None:
                     (
@@ -148,11 +165,14 @@ def get_analyzis_for_filtered_3(
                         midpoints_of_intervals,
                         сonfidence_interval_upper_border,
                         сonfidence_interval_lower_border,
+                        chi2_сonfidence_interval_upper_border,
+                        chi2_сonfidence_interval_lower_border,
+                        avg_failure_rate_chi2_сonfidence_interval_lower_border,
+                        avg_failure_rate_chi2_сonfidence_interval_upper_border,
                         p_value,
                         r_value,
-                        x2_value,
                     ) = result
                     print(
-                        f"{file_name};{avg_failure_rate};{number_of_items};{total_failures}{regression_line_slope};{regression_line_intercept};{p_value};{r_value}",
+                        f"{file_name};{avg_failure_rate};{number_of_items};{total_failures};{regression_line_slope};{regression_line_intercept};{p_value};{r_value}",
                         file=numbers_file,
                     )
