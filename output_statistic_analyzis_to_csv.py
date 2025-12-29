@@ -35,6 +35,7 @@ def output_statistic_analyzis_to_csv(
     number_of_items,
     total_failures,
     avg_failure_rate,
+    avg_failure_rate_2,
     interval_width,
     intervals_borders,
     regression_line_slope,
@@ -43,23 +44,34 @@ def output_statistic_analyzis_to_csv(
     counts_in_intervals,
     midpoints_of_intervals,
     сonfidence_interval_upper_border,
-    сonfidence_interval_lower_border,
+    сonfidence_interval_lower_border,   
+    chi2_сonfidence_interval_upper_border,
+    chi2_сonfidence_interval_lower_border,
+    avg_failure_rate_chi2_сonfidence_interval_lower_border,
+    avg_failure_rate_chi2_сonfidence_interval_upper_border,
+    avg_failure_rate_2_chi2_сonfidence_interval_lower_border,
+    avg_failure_rate_2_chi2_сonfidence_interval_upper_border,
     p_value,
-    r_value,
-    x2_value
+    r_value
 ):
     count_of_defects = len(data)
     name_without_ext = os.path.splitext(file_name)[0]
     csv_file_data = f"{os.path.basename(name_without_ext)}\n"
     csv_file_data += f"кол-во дефектов;{count_of_defects}\n"
     csv_file_data += f"кол-во единиц оборудования;{number_of_items}\n"
-    csv_file_data += f"средняя интенсивность отказов;{avg_failure_rate}\n"
-    csv_file_data += f"параметры интерполяции;a;{regression_line_slope}\n"
-    csv_file_data += f";b;{regression_line_intercept}\n"
-    csv_file_data += f";p_value;{p_value}\n"
-    csv_file_data += f";r_value;{r_value}\n"
+    csv_file_data += f"средняя интенсивность отказов;{avg_failure_rate:.3e}\n"
+    csv_file_data += f"верхняя доверительная граница;{avg_failure_rate_chi2_сonfidence_interval_upper_border:.3e}\n"
+    csv_file_data += f"нижняя доверительная граница;{avg_failure_rate_chi2_сonfidence_interval_lower_border:.3e}\n"
+    if avg_failure_rate_2:
+        csv_file_data += f"интенсивность за 10 лет;{avg_failure_rate_2:.3e}\n"
+        csv_file_data += f"верхняя доверительная граница;{avg_failure_rate_2_chi2_сonfidence_interval_upper_border:.3e}\n"
+        csv_file_data += f"нижняя доверительная граница;{avg_failure_rate_2_chi2_сonfidence_interval_lower_border:.3e}\n"
+    csv_file_data += f"параметры интерполяции;a;{regression_line_slope:.3e}\n"
+    csv_file_data += f";b;{regression_line_intercept:.3e}\n"
+    csv_file_data += f";p_value;{p_value:.3f}\n"
+    csv_file_data += f";r_value;{r_value:.3f}\n"
     
-    interval_borders_table = [[], [], [], [], [], [], []]
+    interval_borders_table = [[], [], [], [], [], [], [], [], []]
     for iter in range(len(intervals_borders) - 1):
         interval_borders_table[0].append(iter + 1)
         interval_borders_table[1].append(intervals_borders[iter])
@@ -67,7 +79,9 @@ def output_statistic_analyzis_to_csv(
         interval_borders_table[3].append(midpoints_of_intervals[iter])
         interval_borders_table[4].append(сonfidence_interval_lower_border[iter])
         interval_borders_table[5].append(сonfidence_interval_upper_border[iter])
-        interval_borders_table[6].append(counts_in_intervals[iter])
+        interval_borders_table[6].append(chi2_сonfidence_interval_lower_border[iter])
+        interval_borders_table[7].append(chi2_сonfidence_interval_upper_border[iter])
+        interval_borders_table[8].append(counts_in_intervals[iter])
     table_in_csv = add_table_to_csv(
         interval_borders_table,
         [
@@ -75,6 +89,8 @@ def output_statistic_analyzis_to_csv(
             "Граница нижняя, сут.",
             "Граница верхняя, сут.",
             "Середина интервала, сут.",
+            "Доверительная граница аппроксимации нижняя, сут.(-1)",
+            "Доверительная граница аппроксимации верхняя, сут.(-1)",
             "Доверительная граница нижняя, сут.(-1)",
             "Доверительная граница верхняя, сут.(-1)",
             "Кол-во отказов заданного типа",
@@ -104,6 +120,7 @@ def output_statistic_analyzis_to_csv(
         "Распределение отказов по наработке",
     )
     csv_file_data += table_in_csv
+    
     
     file_name = f"{name_without_ext}.csv"
     with open(file_name, "w") as csv_file:

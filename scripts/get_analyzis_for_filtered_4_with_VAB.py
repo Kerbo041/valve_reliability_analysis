@@ -1,0 +1,311 @@
+import os
+from model.valve import Valve
+from model.defect import Defect
+from calculate_defect_intensivity import calculate_defect_intensivity
+from typing import Dict, List, Tuple
+
+
+def get_analyzis_for_filtered_4(
+    valve_list: Dict[str, Valve],
+    NUMBER_OF_INTERVALS,
+    NUMBER_OF_ITEMS,
+    CONFIDENCE_LEVEL,
+    vab,
+    base_path="files//result_filtered_with_vab//",
+):
+    valves_filtered = {
+        "Задвижки запорные": {
+            "3-4": [],
+            "5": [],
+            "6-7": [],
+        },
+        "Клапаны запорные": {"3-4": [], "5": [], "6-7": []},
+        "Клапаны обратные": {"3-4": [], "5": [], "6-7": []},
+        "Клапаны регулирующие": {"3-4": [], "5": [], "6-7": []},
+        "Шаровые краны": {"3-4": [], "5": [], "6-7": []},
+    }
+    filtered_arrays = {
+        "Задвижки запорные": {
+            "3-4": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 758,
+            },
+            "5": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 2247,
+            },
+            "6-7": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 2581,
+            },
+        },
+        "Клапаны запорные": {
+            "3-4": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 8197,
+            },
+            "5": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 18013,
+            },
+            "6-7": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 25673,
+            },
+        },
+        "Клапаны обратные": {
+            "3-4": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 257,
+            },
+            "5": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 218,
+            },
+            "6-7": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 1647,
+            },
+        },
+        "Клапаны регулирующие": {
+            "3-4": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 35,
+            },
+            "5": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 33,
+            },
+            "6-7": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 971,
+            },
+        },
+        "Шаровые краны": {
+            "3-4": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 168,
+            },
+            "5": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 42,
+            },
+            "6-7": {
+                "defect_types": {
+                    "отказ типа НГЗ": [],
+                    "отказ типа НГВ": [],
+                    "отказы типа ОЗ объединённые": [],
+                },
+                "valves_count": 2764,
+            },
+        },
+    }
+
+    for valve_name in valve_list:
+        try:
+            if (
+                valve_list[valve_name].commissioning_date is not None
+                and valve_list[valve_name].main_valve_type is not None
+            ):
+                if valve_list[valve_name].main_valve_type == "Задвижка":
+
+                    valves_filtered["Задвижки запорные"][
+                        valve_list[valve_name].get_block_number()
+                    ].append(valve_list[valve_name])
+                if (
+                    valve_list[valve_name].valve_type == "Вентиль запорный"
+                    or valve_list[valve_name].valve_type == "Вентиль сильфонный"
+                    or valve_list[valve_name].valve_type == "Клапан запорный"
+                    or valve_list[valve_name].valve_type == "Клапан сильфонный"
+                ):
+                    valves_filtered["Клапаны запорные"][
+                        valve_list[valve_name].get_block_number()
+                    ].append(valve_list[valve_name])
+
+                if valve_list[valve_name].valve_type == "Клапан обратный":
+                    valves_filtered["Клапаны обратные"][
+                        valve_list[valve_name].get_block_number()
+                    ].append(valve_list[valve_name])
+                if valve_list[valve_name].valve_type == "Клапан регулирующий":
+                    valves_filtered["Клапаны регулирующие"][
+                        valve_list[valve_name].get_block_number()
+                    ].append(valve_list[valve_name])
+                if valve_list[valve_name].valve_type == "Шаровой кран":
+                    valves_filtered["Шаровые краны"][
+                        valve_list[valve_name].get_block_number()
+                    ].append(valve_list[valve_name])
+                for defect in valve_list[valve_name].defect_list:
+                    if defect.defect_date is not None:
+                        try:
+                            value = (
+                                defect.defect_date
+                                - valve_list[valve_name].commissioning_date
+                            ).days
+
+                            if valve_list[valve_name].main_valve_type == "Задвижка":
+                                filtered_arrays["Задвижки запорные"][
+                                    valve_list[valve_name].get_block_number()
+                                ]["defect_types"][defect.defect_class].append(value)
+                            if (
+                                valve_list[valve_name].valve_type == "Вентиль запорный"
+                                or valve_list[valve_name].valve_type
+                                == "Вентиль сильфонный"
+                                or valve_list[valve_name].valve_type
+                                == "Клапан запорный"
+                                or valve_list[valve_name].valve_type
+                                == "Клапан сильфонный"
+                            ):
+                                filtered_arrays["Клапаны запорные"][
+                                    valve_list[valve_name].get_block_number()
+                                ]["defect_types"][defect.defect_class].append(value)
+                            if valve_list[valve_name].valve_type == "Клапан обратный":
+                                filtered_arrays["Клапаны обратные"][
+                                    valve_list[valve_name].get_block_number()
+                                ]["defect_types"][defect.defect_class].append(value)
+                            if valve_list[valve_name].valve_type == "Клапан регулирующий":
+                                filtered_arrays["Клапаны регулирующие"][
+                                    valve_list[valve_name].get_block_number()
+                                ]["defect_types"][defect.defect_class].append(value)
+                            if valve_list[valve_name].valve_type == "Шаровой кран":
+                                filtered_arrays["Шаровые краны"][
+                                    valve_list[valve_name].get_block_number()
+                                ]["defect_types"][defect.defect_class].append(value)
+                            
+                            
+                            
+                        except Exception as exception:
+                            pass
+        except Exception as exception:
+            print(exception)
+
+    numbers_file_path = os.path.join(base_path, "result_numbers.csv")
+    directory_path = os.path.dirname(numbers_file_path)
+    if not os.path.isdir(directory_path):
+        os.makedirs(directory_path, exist_ok=True)
+    numbers_file = open(numbers_file_path, "w")
+    print(
+        f"тип оборудования;номер блока;класс дефекта;средняя интенсивность;десятилетняя интенсивность;кол-во единиц обороудования;кол-во отказов;коэффициент аппроксимации k;коэффициент аппроксимации x;p_value;r_value",
+        file=numbers_file,
+    )
+    defect_type = None
+    for valve_type in filtered_arrays:
+        for block_number in filtered_arrays[valve_type]:
+            for defect_class in filtered_arrays[valve_type][block_number]["defect_types"]:
+                file_name = (
+                    f"{valve_type}, блок {block_number} НВАЭС, {defect_class}.jpg"
+                )
+
+                output_file_path = os.path.join(
+                    base_path, os.path.splitext(file_name)[0]
+                )
+                output_file_path = os.path.join(output_file_path, file_name)
+                # directory_path = os.path.dirname(output_file_path)
+                # if not os.path.isdir(directory_path):
+                #     os.makedirs(directory_path, exist_ok=True)
+                print(len(valves_filtered[valve_type][block_number]))
+                print(
+                    filtered_arrays[valve_type][block_number]["valves_count"]
+                )
+                result = calculate_defect_intensivity(
+                    filtered_arrays[valve_type][block_number]["defect_types"][
+                        defect_class
+                    ],
+                    valve_type,
+                    defect_type,
+                    output_file_path,
+                    NUMBER_OF_INTERVALS,
+                    filtered_arrays[valve_type][block_number]["valves_count"],
+                    CONFIDENCE_LEVEL,
+                    vab[valve_type][block_number],
+                )
+                if result is not None:
+                    (
+                        data,
+                        number_of_items,
+                        total_failures,
+                        avg_failure_rate,
+                        avg_failure_rate_2,
+                        interval_width,
+                        intervals_borders,
+                        regression_line_slope,
+                        regression_line_intercept,
+                        failure_rates,
+                        counts_in_intervals,
+                        midpoints_of_intervals,
+                        сonfidence_interval_upper_border,
+                        сonfidence_interval_lower_border,
+                        chi2_сonfidence_interval_upper_border,
+                        chi2_сonfidence_interval_lower_border,
+                        avg_failure_rate_chi2_сonfidence_interval_lower_border,
+                        avg_failure_rate_chi2_сonfidence_interval_upper_border,
+                        avg_failure_rate_2_chi2_сonfidence_interval_lower_border,
+                        avg_failure_rate_2_chi2_сonfidence_interval_upper_border,
+                        p_value,
+                        r_value,
+                    ) = result
+                    if avg_failure_rate_2:
+                        print(
+                            f"{valve_type};БЛОК {block_number};{defect_class};{avg_failure_rate:.3e};{avg_failure_rate_2:.3e};{number_of_items};{total_failures};{regression_line_slope:.3e};{regression_line_intercept:.3e};{p_value:.3f};{r_value:.3f}",
+                            file=numbers_file,
+                        )
+                    else:
+                        print(
+                            f"{valve_type};БЛОК {block_number};{defect_class};{avg_failure_rate:.3e};{avg_failure_rate_2};{number_of_items};{total_failures};{regression_line_slope:.3e};{regression_line_intercept:.3e};{p_value:.3f};{r_value:.3f}",
+                            file=numbers_file,
+                        )

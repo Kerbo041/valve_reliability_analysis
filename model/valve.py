@@ -51,12 +51,16 @@ class Valve:
         self.full_valve_name = torex_record.full_valve_name
 
     def set_block_number(self, block_number):
-        if block_number == "3; 4":
+        if block_number == "3; 4" or '3; 4':
             self.block_number = "3-4"
         if block_number == "6; 7" or block_number == "6" or block_number == "7":
             self.block_number = "6-7"
         else:
             self.block_number = block_number
+            
+    def get_block_number_str(self):
+        return f"БЛОК {self.get_block_number()}"
+    
     def to_str_with_defects(self):
         output = f"{self.valve_name};{self.manufacturer};type: {self.valve_type};main type: {self.main_valve_type};description: {self.get_descritpion()};element_name: {self.element_name};{self.full_valve_name};{self.get_block_number()};{self.commissioning_date};"
         # if self.description:
@@ -65,7 +69,7 @@ class Valve:
             output += f"{iter}: {defect}"
         return output
     def __str__(self):
-        output = f"{self.valve_name};{self.full_valve_name};{self.get_block_number()};{self.valve_type};{self.main_valve_type}"
+        output = f"{self.valve_name};{self.element_name};{self.description};{self.full_valve_name};{self.get_block_number_str()};{self.valve_type};{self.main_valve_type};"
         return output
 
 
@@ -77,8 +81,12 @@ class Valve:
 
     def get_block_number(self):
         try:
-            if int(self.block_number) == 3 or int(self.block_number) == 4:
+            if self.block_number == '3; 4' or self.block_number == "БЛОК 3-4" or self.block_number == "3" or self.block_number == "4":
                 return "3-4"
+            elif self.block_number == "БЛОК 5":
+                return "5"
+            elif self.block_number == "БЛОК 6" or self.block_number == "БЛОК 7":
+                return "6-7"
             else:
                 return self.block_number
         except Exception as e:
@@ -102,3 +110,4 @@ class Valve:
                 )
         else:
             return ""
+

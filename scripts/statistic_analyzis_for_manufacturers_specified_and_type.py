@@ -1,6 +1,6 @@
 import os
 from calculate_defect_intensivity import calculate_defect_intensivity
-from scripts.get_analyzis_for_filtered_3_with_VAB import *
+from scripts.get_analyzis_for_filtered_4_with_VAB import *
 
 # --------------------------------------------------------------------------------------
 # Выполнение статистического анализа для разных производителей (распознанных из сырой таблицы) по типам арматуры
@@ -35,10 +35,10 @@ def statistic_analyzis_for_manufacturers_specified_and_type(
         if manufacturer is not None:
             base_path="files//result_filtered_with_vab_and_manufacturer"
             base_path_with_manufacturer = os.path.join(base_path, manufacturer)
-            get_analyzis_for_filtered_3( manufacturers_valve_type_data[manufacturer],
+            get_analyzis_for_filtered_4( manufacturers_valve_type_data[manufacturer],
         NUMBER_OF_INTERVALS,
         NUMBER_OF_ITEMS,
         CONFIDENCE_LEVEL,
-        vab, base_path)
+        vab, base_path_with_manufacturer)
 
 # --------------------------------------------------------------------------------------

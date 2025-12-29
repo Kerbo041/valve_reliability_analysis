@@ -13,6 +13,7 @@ import os
 from scripts.get_analyzis_for_filtered_1 import get_analyzis_for_filtered_1
 from scripts.get_analyzis_for_filtered_2 import get_analyzis_for_filtered_2
 from scripts.get_analyzis_for_filtered_3_with_VAB import get_analyzis_for_filtered_3
+from scripts.get_analyzis_for_filtered_4_with_VAB import get_analyzis_for_filtered_4
 from scripts.statistic_analyzis_for_manufacturers_specified_and_type import *
 from scripts.select_valves_by_type import select_valves_by_type
 
@@ -42,9 +43,34 @@ CONFIDENCE_LEVEL = 0.9  # Уровень доверия (P=0.9)
 
 
 vab = {
-    "3-4": (2.73 + 8.95) * 24 * (10 ** (-7)),
-    "5": (3.0 + 1.78) * 24 * (10 ** (-6)),
-    "6-7": (3.0 + 1.78) * 24 * (10 ** (-6)),
+    "Задвижки запорные": {
+        "3-4": (2.73 + 8.95) * 24 * (10 ** (-7)),
+        "5": (2.73 + 8.95) * 24 * (10 ** (-7)),
+        # "5": (3.0 + 1.78) * 24 * (10 ** (-6)),
+        "6-7": (3.0 + 1.78) * 24 * (10 ** (-6)),
+    },
+    "Шаровые краны": {
+        "3-4": (2.73 + 8.95) * 24 * (10 ** (-7)),
+        "5": (2.73 + 8.95) * 24 * (10 ** (-7)),
+        # "5": (3.0 + 1.78) * 24 * (10 ** (-6)),
+        "6-7": (3.0 + 1.78) * 24 * (10 ** (-6)),
+    },
+    "Клапаны запорные": {
+        "3-4": (2.73 + 8.95) * 24 * (10 ** (-7)),
+        "5": (2.73 + 8.95) * 24 * (10 ** (-7)),
+        # "5": (3.0 + 1.78) * 24 * (10 ** (-6)),
+        "6-7": (3.0 + 1.78) * 24 * (10 ** (-6)),
+    },
+    "Клапаны обратные": {
+        "3-4": (1.19 + 6.37) * 24 * (10 ** (-7)),
+        "5": (1.19 + 6.37) * 24 * (10 ** (-7)),
+        "6-7": (1.029 + 3.1) * 24 * (10 ** (-6)),
+    },
+    "Клапаны регулирующие": {
+        "3-4": (0.136 + 1.58) * 24 * (10 ** (-6)),
+        "5": (0.136 + 1.58) * 24 * (10 ** (-6)),
+        "6-7": (1.95 + 0.465) * 24 * (10 ** (-6)),
+    },
 }
 # =========================
 
@@ -64,7 +90,11 @@ def get_manufacturer_from_valve(valve: Valve, whitelist: Dict[str, str]):
     result = False
     for manufacturer in whitelist:
         for manufacturer_name_variant in whitelist[manufacturer]:
-            if valve.manufacturer.upper().find(manufacturer_name_variant.upper()) != -1:
+            if (
+                valve.manufacturer
+                and valve.manufacturer.upper().find(manufacturer_name_variant.upper())
+                != -1
+            ):
                 result = True
                 valve.manufacturer_defined = manufacturer
                 return result
@@ -127,11 +157,44 @@ torex_list = {
     f"{torex_record.get_block_number()}_{torex_record.get_valve_name_operational_upper()}": torex_record
     for torex_record in torex_file_data[0]
 }
+
 torex_errors_file = open("files//torex_errors.csv", "w", encoding="utf-8")
 for record in torex_list:
     if torex_list[record].valve_name_plant != torex_list[record].valve_name_operational:
         print(torex_list[record], file=torex_errors_file)
 
+# добавление всех оставшихся задвижек из ТОРЭКС
+for name_in_torex_list in torex_list:
+    if not name_in_torex_list in valve_list:
+        valve_list[name_in_torex_list] = Valve(
+            valve_name=name_in_torex_list,
+            full_valve_name=torex_list[name_in_torex_list].full_valve_name,
+            description=torex_list[name_in_torex_list].description,
+            valve_name_operational=torex_list[
+                name_in_torex_list
+            ].valve_name_operational,
+            valve_name_plant=torex_list[name_in_torex_list].valve_name_plant,
+            block_number=torex_list[name_in_torex_list].block_number,
+            valve_type_short=torex_list[name_in_torex_list].valve_type_short,
+            commissioning_date=torex_list[name_in_torex_list].commissioning_date,
+        )
+# ----------------------------------------
+#   VALVES FROM TOREX
+# ----------------------------------------
+# valve_list_based_on_torex = {
+#     name_in_torex_list: Valve(
+#         valve_name=name_in_torex_list,
+#         full_valve_name=torex_list[name_in_torex_list].full_valve_name,
+#         description=torex_list[name_in_torex_list].description,
+#         valve_name_operational=torex_list[name_in_torex_list].valve_name_operational,
+#         valve_name_plant=torex_list[name_in_torex_list].valve_name_plant,
+#         block_number=torex_list[name_in_torex_list].block_number,
+#         valve_type_short=torex_list[name_in_torex_list].valve_type_short,
+#         commissioning_date=torex_list[name_in_torex_list].commissioning_date,
+#     )
+#     for name_in_torex_list in torex_list
+# }
+# ----------------------------------------
 valve_type_search_in_torex(valve_list, torex_list)
 
 
@@ -140,6 +203,17 @@ for valve_name in valve_list:
     get_manufacturer_from_valve(valve_list[valve_name], manufacturers_list)
     get_defect_type(valve_list[valve_name], defect_types)
     get_defect_class(valve_list[valve_name], defect_classes)
+# ----------------------------------------
+#   VALVES FROM TOREX
+# ----------------------------------------
+# for valve_name in valve_list_based_on_torex:
+#     try:
+#         get_type_from_element_name(
+#             valve_list_based_on_torex[valve_name], types_whitelist
+#         )
+#     except:
+#         print(valve_list_based_on_torex[valve_name])
+# ----------------------------------------
 
 # select_valves_by_type(valve_list, defect_types, types_whitelist)
 
@@ -150,7 +224,37 @@ for valve_name in valve_list:
 #     valve_list, NUMBER_OF_INTERVALS, NUMBER_OF_ITEMS, CONFIDENCE_LEVEL
 # )
 
-get_analyzis_for_filtered_3(
+with open("files\\defects_parsed.csv", "w") as defects_parsed_output_file:
+    print(
+        "код е/о;название е/о;описание;полное название;блок;тип;укрупненный тип;дата обнаружения дефекта;описание дефекта;тип дефекта;класс дефекта",
+        file=defects_parsed_output_file,
+    )
+    for _valve_name in valve_list:
+        for _defect in valve_list[_valve_name].defect_list:
+            try:
+                print(
+                    str(valve_list[_valve_name]).replace("\n", " "),
+                    str(_defect).replace("\n", " "),
+                    sep="",
+                    file=defects_parsed_output_file,
+                )
+            except Exception as e:
+                print("-" * 20)
+                print(e, type(e).__name__)
+                print(_valve_name)
+                try:
+                    print(str(valve_list[_valve_name]).replace("\n", " "))
+                except Exception as e:
+                    print("valve error")
+                    print(e, type(e).__name__)
+                try:
+                    print(str(_defect).replace("\n", " "))
+                except Exception as e:
+                    print(e, type(e).__name__)
+                    print("defect error")
+                pass
+
+get_analyzis_for_filtered_4(
     valve_list, NUMBER_OF_INTERVALS, NUMBER_OF_ITEMS, CONFIDENCE_LEVEL, vab
 )
 
@@ -158,8 +262,10 @@ valve_by_manufacturers_list = {}
 for valve_name in valve_list:
     if not valve_list[valve_name].manufacturer_defined in valve_by_manufacturers_list:
         valve_by_manufacturers_list[valve_list[valve_name].manufacturer_defined] = {}
-        
-    valve_by_manufacturers_list[valve_list[valve_name].manufacturer_defined][valve_name] = (valve_list[valve_name])
+
+    valve_by_manufacturers_list[valve_list[valve_name].manufacturer_defined][
+        valve_name
+    ] = valve_list[valve_name]
 statistic_analyzis_for_manufacturers_specified_and_type(
     valve_by_manufacturers_list,
     result_manufacturer_valve_type_folder_path,
@@ -168,3 +274,119 @@ statistic_analyzis_for_manufacturers_specified_and_type(
     CONFIDENCE_LEVEL,
     vab,
 )
+# ----------------------------------------
+#   VALVES FROM TOREX
+# ----------------------------------------
+# valves_sorted = {"Вентиль запорный": {}, "Задвижка": {}, "Клапан": {}}
+# for valve_name in valve_list_based_on_torex:
+#     # try:
+#         if valve_list_based_on_torex[valve_name].main_valve_type == "Задвижка":
+#             if (valve_list_based_on_torex[valve_name].get_block_number() not in valves_sorted["Задвижка"]):
+#                 valves_sorted["Задвижка"][valve_list_based_on_torex[valve_name].get_block_number()] = []
+#             valves_sorted["Задвижка"][valve_list_based_on_torex[valve_name].get_block_number()].append(valve_list_based_on_torex[valve_name])
+#         if valve_list_based_on_torex[valve_name].main_valve_type == "Клапан":
+#             if (valve_list_based_on_torex[valve_name].get_block_number() not in valves_sorted["Клапан"]):
+#                 valves_sorted["Клапан"][valve_list_based_on_torex[valve_name].get_block_number()] = []
+#             valves_sorted["Клапан"][valve_list_based_on_torex[valve_name].get_block_number()].append(valve_list_based_on_torex[valve_name])
+#         if (valve_list_based_on_torex[valve_name].valve_type == "Вентиль запорный" or valve_list_based_on_torex[valve_name].valve_type == "Клапан запорный" or valve_list_based_on_torex[valve_name].valve_type == "Клапан сильфонный"):
+#             if (valve_list_based_on_torex[valve_name].get_block_number() not in valves_sorted["Вентиль запорный"]):
+#                 valves_sorted["Вентиль запорный"][valve_list_based_on_torex[valve_name].get_block_number()] = []
+#             valves_sorted["Вентиль запорный"][valve_list_based_on_torex[valve_name].get_block_number()].append(valve_list_based_on_torex[valve_name])
+#     # except Exception as exception:
+#     #     pass
+# for _type in valves_sorted:
+#     for _block in valves_sorted[_type]:
+#         print(_type, _block, len(valves_sorted[_type][_block]))
+# # ----------------------------------------
+
+# valves_sorted = {"Вентиль запорный": {}, "Задвижка": {}, "Клапан": {}}
+# for valve_name in valve_list:
+#     # try:
+#         if valve_list[valve_name].main_valve_type == "Задвижка":
+#             if (valve_list[valve_name].get_block_number() not in valves_sorted["Задвижка"]):
+#                 valves_sorted["Задвижка"][valve_list[valve_name].get_block_number()] = []
+#             valves_sorted["Задвижка"][valve_list[valve_name].get_block_number()].append(valve_list[valve_name])
+#         if valve_list[valve_name].main_valve_type == "Клапан":
+#             if (valve_list[valve_name].get_block_number() not in valves_sorted["Клапан"]):
+#                 valves_sorted["Клапан"][valve_list[valve_name].get_block_number()] = []
+#             valves_sorted["Клапан"][valve_list[valve_name].get_block_number()].append(valve_list[valve_name])
+#         if (valve_list[valve_name].valve_type == "Вентиль запорный" or valve_list[valve_name].valve_type == "Клапан запорный" or valve_list[valve_name].valve_type == "Клапан сильфонный"):
+#             if (valve_list[valve_name].get_block_number() not in valves_sorted["Вентиль запорный"]):
+#                 valves_sorted["Вентиль запорный"][valve_list[valve_name].get_block_number()] = []
+#             valves_sorted["Вентиль запорный"][valve_list[valve_name].get_block_number()].append(valve_list[valve_name])
+#     # except Exception as exception:
+#     #     pass
+# for _type in valves_sorted:
+#     for _block in valves_sorted[_type]:
+#         print(_type, _block, len(valves_sorted[_type][_block]))
+
+
+counters_all = {}
+counters_type = {}
+for _valve_name in valve_list:
+    _block_number = valve_list[_valve_name].get_block_number()
+    _main_type = valve_list[_valve_name].main_valve_type
+    _type = valve_list[_valve_name].valve_type
+    _defects_count = len(valve_list[_valve_name].defect_list)
+    if not _main_type in counters_all:
+        counters_all[_main_type] = {}
+    if not _block_number in counters_all[_main_type]:
+        counters_all[_main_type][_block_number] = {"defects": 0, "valves": 0}
+    counters_all[_main_type][_block_number]["defects"] = (
+        counters_all[_main_type][_block_number]["defects"] + _defects_count
+    )
+    counters_all[_main_type][_block_number]["valves"] = (
+        counters_all[_main_type][_block_number]["valves"] + 1
+    )
+
+    if not _main_type in counters_type:
+        counters_type[_main_type] = {}
+    if not _type in counters_type[_main_type]:
+        counters_type[_main_type][_type] = {}
+    if not _block_number in counters_type[_main_type][_type]:
+        counters_type[_main_type][_type][_block_number] = {"defects": 0, "valves": 0}
+    counters_type[_main_type][_type][_block_number]["defects"] = (
+        counters_type[_main_type][_type][_block_number]["defects"] + _defects_count
+    )
+    counters_type[_main_type][_type][_block_number]["valves"] = (
+        counters_type[_main_type][_type][_block_number]["valves"] + 1
+    )
+    1
+
+
+# for _valve_name in valve_list:
+
+
+#     for _main_type in types_whitelist:
+#         if not _main_type in counters:
+#             counters[_main_type] = {"all": {}, "by_type": {}}
+#         for _type in types_whitelist[_main_type]:
+#             if not _type in counters[_main_type]:
+#                 counters[_main_type]["by_type"][_type] = {}
+#             if valve_list[_valve_name].get_block_number() not in  counters[_main_type]["by_type"][_type]:
+#                 counters[_main_type]["by_type"][_type][valve_list[_valve_name].get_block_number()] = {"defects": 0, "valves": 0}
+#             if valve_list[_valve_name].get_block_number() not in  counters[_main_type]["all"]:
+#                 counters[_main_type]["all"][valve_list[_valve_name].get_block_number()] = {"defects": 0, "valves": 0}
+#             if valve_list[_valve_name].main_valve_type == _main_type:
+#                 counters[_main_type]["all"][valve_list[_valve_name].get_block_number()]["valves"] += 1
+#                 counters[_main_type]["all"][valve_list[_valve_name].get_block_number()]["defects"] += len(valve_list[_valve_name].defect_list)
+#             if valve_list[_valve_name].valve_type == _type:
+#                 counters[_main_type]["by_type"][_type][valve_list[_valve_name].get_block_number()]["valves"] += 1
+#                 counters[_main_type]["by_type"][_type][valve_list[_valve_name].get_block_number()]["defects"] += len(valve_list[_valve_name].defect_list)
+with open("count_all.txt", "w") as f:
+    print("main_type;block_number;defects;valves", file=f)
+    for _main_type in counters_all:
+        for _block_number in counters_all[_main_type]:
+            print(
+                f"{_main_type};{_block_number};{counters_all[_main_type][_block_number]["defects"]};{counters_all[_main_type][_block_number]["valves"]}",
+                file=f,
+            )
+with open("count_types.txt", "w") as f:
+    print("main_type;type;block_number;defects;valves", file=f)
+    for _main_type in counters_type:
+        for _type in counters_type[_main_type]:
+            for _block_number in counters_type[_main_type][_type]:
+                print(
+                    f"{_main_type};{_type};{_block_number};{counters_type[_main_type][_type][_block_number]["defects"]};{counters_type[_main_type][_type][_block_number]["valves"]}",
+                    file=f,
+                )
