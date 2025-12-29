@@ -15,6 +15,7 @@ def calculate_defect_intensivity(
     confidence_level=0.9,
     standart_intensivity=None,
     graph_width=5.9055,
+    colored = False
 ):
     try:
         # if len(data) < 50:
@@ -105,14 +106,37 @@ def calculate_defect_intensivity(
     
         # Построение графика
         plt.figure(figsize=(graph_width, graph_width / 1.5))
-
+        if colored:
+            colors = {
+                "group_intensivity": "#829fe3",
+                "average_intensivity":"r",
+                "decade_intensivity":"b",
+                "standart_intensivity":"tab:orange", 
+                "approximation":"g",
+                "average_intensivity_interval":'#ff5050',
+                "decade_intensivity_interval": "#bb99ff", 
+                "approximation_interval" : "m"
+            }
+        else:
+            colors = {
+                "group_intensivity": "#999999",
+                "average_intensivity":"#000000",
+                "decade_intensivity":"#000000",
+                "standart_intensivity":"000000", 
+                "approximation":"#555555",
+                "average_intensivity_interval":'#555555',
+                "decade_intensivity_interval": "#333333", 
+                "approximation_interval" : "#777777"
+            }
         # Гистограмма интенсивности отказов
         plt.bar(
             midpoints_of_intervals,
             failure_rates,
             width=interval_width * 0.8,
             align="center",
+            color = colors["group_intensivity"],
             alpha=0.7,
+            hatch = "xxx",
             label="Групповая интенсивность ",
         )
         # # Гистограмма интенсивности отказов2
@@ -129,23 +153,23 @@ def calculate_defect_intensivity(
         # Средняя интенсивность
         plt.axhline(
             y=avg_failure_rate,
-            color="r",
-            linestyle="-",
+            color=colors["average_intensivity"],
+            linestyle="--",
             label=f"Средняя интенсивность"#: {avg_failure_rate:.2e},\nкол-во отказов: {total_failures}, кол-во оборудования: {number_of_items}",
         )
         # Средняя интенсивность2
         if ten_years_passed:
             plt.axhline(
                 y=avg_failure_rate_2,
-                color="b",
-                linestyle="-",
+                color=colors["decade_intensivity"],
+                linestyle="-.",
                 label=f"Десятилетняя интенсивность"#: {avg_failure_rate:.2e},\nкол-во отказов: {total_failures}, кол-во оборудования: {number_of_items}",
             )
         if standart_intensivity:
             # Интенсивность по ВАБ
             plt.axhline(
                 y=standart_intensivity,
-                color="tab:orange",
+                color=colors["standart_intensivity"],
                 linestyle="-",
                 label=f"Интенсивность по ВАБ"#: {standart_intensivity:.2e}",
             )
@@ -154,7 +178,8 @@ def calculate_defect_intensivity(
         plt.plot(
             midpoints_of_intervals,
             regression_line,
-            "g--",
+            color = colors["approximation"],
+            linestyle = ":",
             linewidth=2,
             label=f"Линейная аппроксимация"#: y = {regression_line_slope:.2e}x + {regression_line_intercept:.2e}\nP-уровень: {p_value:.2f}; R-уровень: {r_value:.2f}; P={confidence_level}",
         )
@@ -162,7 +187,8 @@ def calculate_defect_intensivity(
                 avg_failure_rate_chi2_сonfidence_interval_lower_border,  # нижняя граница
                 avg_failure_rate_chi2_сonfidence_interval_upper_border,  # верхняя граница
                 alpha=0.3,         # прозрачность
-                color='#ff5050',
+                color=colors["average_intensivity_interval"],
+                hatch = "///",
                 label = "Доверительный интервал \nсредней интенсивности"
                 )
         if ten_years_passed:
@@ -170,7 +196,8 @@ def calculate_defect_intensivity(
                     avg_failure_rate_2_chi2_сonfidence_interval_lower_border,  # нижняя граница
                     avg_failure_rate_2_chi2_сonfidence_interval_upper_border,  # верхняя граница
                     alpha=0.3,         # прозрачность
-                    color='#bb99ff',
+                    hatch = "\\\\\\",
+                    color=colors["decade_intensivity_interval"],
                     label = "Доверительный интервал \nдесятилетней интенсивности"
                     )
         # plt.errorbar(
@@ -191,7 +218,8 @@ def calculate_defect_intensivity(
         plt.plot(
             midpoints_of_intervals,
             сonfidence_interval_upper_border,
-            "m-",
+            color = colors["approximation_interval"],
+            linestyle = ":",
             linewidth=0.75,
             label=f"Верхняя доверительная\n граница аппроксимации"#(P={confidence_level})",
         )
@@ -419,4 +447,4 @@ def calculate_defect_intensivity(
 
         return statistic
     except Exception as exception:
-        pass
+        print(output_file_path, exception)
