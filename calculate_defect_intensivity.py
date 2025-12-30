@@ -124,8 +124,8 @@ def calculate_defect_intensivity(
                 "decade_intensivity":"#000000",
                 "standart_intensivity":"000000", 
                 "approximation":"#555555",
-                "average_intensivity_interval":'#555555',
-                "decade_intensivity_interval": "#333333", 
+                "average_intensivity_interval":'#afafaf',
+                "decade_intensivity_interval": "#aaaaaa", 
                 "approximation_interval" : "#777777"
             }
         # Гистограмма интенсивности отказов
@@ -136,7 +136,7 @@ def calculate_defect_intensivity(
             align="center",
             color = colors["group_intensivity"],
             alpha=0.7,
-            hatch = "xxx",
+            hatch = "|||",
             label="Групповая интенсивность ",
         )
         # # Гистограмма интенсивности отказов2
@@ -188,7 +188,7 @@ def calculate_defect_intensivity(
                 avg_failure_rate_chi2_сonfidence_interval_upper_border,  # верхняя граница
                 alpha=0.3,         # прозрачность
                 color=colors["average_intensivity_interval"],
-                hatch = "///",
+                # hatch = "///",
                 label = "Доверительный интервал \nсредней интенсивности"
                 )
         if ten_years_passed:
@@ -196,7 +196,7 @@ def calculate_defect_intensivity(
                     avg_failure_rate_2_chi2_сonfidence_interval_lower_border,  # нижняя граница
                     avg_failure_rate_2_chi2_сonfidence_interval_upper_border,  # верхняя граница
                     alpha=0.3,         # прозрачность
-                    hatch = "\\\\\\",
+                    # hatch = "\\\\\\",
                     color=colors["decade_intensivity_interval"],
                     label = "Доверительный интервал \nдесятилетней интенсивности"
                     )
