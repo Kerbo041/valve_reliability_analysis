@@ -1,0 +1,15 @@
+from model.calculated_parameter import Calculated_parameter
+from typing import List
+
+class LinearRegression():
+    
+    def __init__(self, slope, intersept, time_values = None, regression_values = None):
+        self.slope = slope
+        self.intersept = intersept
+        if time_values and type(time_values) == List[Calculated_parameter]:
+            self.time_values = time_values
+        if regression_values and type(regression_values) == Calculated_parameter:
+            self.regression_values = regression_values
+    
+    def calculate_regression_values(self, time_values:List[Calculated_parameter]):
+        self.regression_values = [self.slope * i.value + self.intersept for i in time_values]
