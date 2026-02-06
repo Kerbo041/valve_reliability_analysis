@@ -8,8 +8,13 @@ class LinearRegression():
         self.intersept = intersept
         if time_values and type(time_values) == List[Calculated_parameter]:
             self.time_values = time_values
+        else:
+            self.time_values = None
         if regression_values and type(regression_values) == Calculated_parameter:
             self.regression_values = regression_values
+        else:
+            self.regression_values = None
     
-    def calculate_regression_values(self, time_values:List[Calculated_parameter]):
-        self.regression_values = [self.slope * i.value + self.intersept for i in time_values]
+    def calculate_regression_values(self, time_values):
+        if time_values and type(time_values) == List[Calculated_parameter]:
+            self.regression_values = [self.slope * i.value + self.intersept for i in time_values]
