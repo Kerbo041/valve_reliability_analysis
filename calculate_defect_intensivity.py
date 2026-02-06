@@ -103,7 +103,12 @@ def calculate_defect_intensivity(
         # Доверительные границы
         chi2_сonfidence_interval_lower_border = (failure_rates * chi2_lower) / (2 * total_failures)
         chi2_сonfidence_interval_upper_border = (failure_rates * chi2_upper) / (2 * total_failures)
-    
+
+        
+        # гамма-распределение
+        
+        k, _, theta = stats.gamma.fit(data, floc=0)
+        gamma_intensities  = [stats.gamma.pdf(t, k, scale=theta) / (1 - stats.gamma.cdf(t, k, scale=theta)) if (1 - stats.gamma.cdf(t, k, scale=theta)) > 0 else 0 for t in midpoints_of_intervals]
         # Построение графика
         plt.figure(figsize=(graph_width, graph_width / 1.5))
         if colored:
@@ -182,6 +187,15 @@ def calculate_defect_intensivity(
             linestyle = ":",
             linewidth=2,
             label=f"Линейная аппроксимация"#: y = {regression_line_slope:.2e}x + {regression_line_intercept:.2e}\nP-уровень: {p_value:.2f}; R-уровень: {r_value:.2f}; P={confidence_level}",
+        )
+        # Гамма аппроксимация
+        plt.plot(
+            midpoints_of_intervals,
+            gamma_intensities,
+            # color = colors["approximation"],
+            linestyle = ":",
+            linewidth=2,
+            label=f"Гамма-аппроксимация k = {k}"#: y = {regression_line_slope:.2e}x + {regression_line_intercept:.2e}\nP-уровень: {p_value:.2f}; R-уровень: {r_value:.2f}; P={confidence_level}",
         )
         plt.axhspan(
                 avg_failure_rate_chi2_сonfidence_interval_lower_border,  # нижняя граница
