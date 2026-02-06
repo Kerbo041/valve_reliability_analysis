@@ -17,3 +17,7 @@ class analysis_source():
         self.failure_type = failure_type
         self.standard_intensivity = standard_intensivity
         self.observation_period = observation_period
+
+        self.operating_times_array = None
+        
+    
