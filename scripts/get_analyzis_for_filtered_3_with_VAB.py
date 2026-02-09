@@ -1,7 +1,7 @@
 import os
 from model.valve import Valve
 from model.defect import Defect
-from calculate_defect_intensivity import calculate_defect_intensivity
+from calculate_defect_intensivity import get_analysis_result
 from typing import Dict, List, Tuple
 
 
@@ -102,8 +102,10 @@ def get_analyzis_for_filtered_3(
                                 # ].append(valve_list[valve_name])
                             if (
                                 valve_list[valve_name].valve_type == "Вентиль запорный"
-                                or valve_list[valve_name].valve_type == "Клапан запорный"
-                                or valve_list[valve_name].valve_type == "Клапан сильфонный"
+                                or valve_list[valve_name].valve_type
+                                == "Клапан запорный"
+                                or valve_list[valve_name].valve_type
+                                == "Клапан сильфонный"
                             ):
                                 filtered_arrays["Вентили запорные"][
                                     valve_list[valve_name].get_block_number()
@@ -140,7 +142,7 @@ def get_analyzis_for_filtered_3(
                 # directory_path = os.path.dirname(output_file_path)
                 # if not os.path.isdir(directory_path):
                 #     os.makedirs(directory_path, exist_ok=True)
-                result = calculate_defect_intensivity(
+                result = get_analysis_result(
                     filtered_arrays[valve_type][block_number][defect_class],
                     valve_type,
                     defect_type,

@@ -1,7 +1,7 @@
 import os
 from model.valve import Valve
 from model.defect import Defect
-from calculate_defect_intensivity import calculate_defect_intensivity
+from calculate_defect_intensivity import get_analysis_result
 from typing import Dict, List, Tuple
 
 
@@ -84,13 +84,16 @@ def get_analyzis_for_filtered_2(
                             ][defect.defect_class].append(value)
                     except Exception as exception:
                         pass
-    
+
     numbers_file_path = os.path.join(base_path, "result_numbers.csv")
     directory_path = os.path.dirname(numbers_file_path)
     if not os.path.isdir(directory_path):
         os.makedirs(directory_path, exist_ok=True)
     numbers_file = open(numbers_file_path, "w")
-    print(f"тип;средняя интенсивность;коэффициент аппроксимации a;коэффициент аппроксимации b", file = numbers_file)
+    print(
+        f"тип;средняя интенсивность;коэффициент аппроксимации a;коэффициент аппроксимации b",
+        file=numbers_file,
+    )
     defect_type = None
     for valve_type in filtered_arrays:
         for block_number in filtered_arrays[valve_type]:
@@ -98,18 +101,23 @@ def get_analyzis_for_filtered_2(
                 file_name = (
                     f"{valve_type}, блок {block_number} НВАЭС, {defect_class}.png"
                 )
-                
+
                 output_file_path = os.path.join(base_path, file_name)
                 directory_path = os.path.dirname(output_file_path)
                 if not os.path.isdir(directory_path):
                     os.makedirs(directory_path, exist_ok=True)
-                avg_failure_rate, regression_line_slope, regression_line_intercept = calculate_defect_intensivity(
-                    filtered_arrays[valve_type][block_number][defect_class],
-                    valve_type,
-                    defect_type,
-                    output_file_path,
-                    NUMBER_OF_INTERVALS,
-                    NUMBER_OF_ITEMS,
-                    CONFIDENCE_LEVEL,
+                avg_failure_rate, regression_line_slope, regression_line_intercept = (
+                    get_analysis_result(
+                        filtered_arrays[valve_type][block_number][defect_class],
+                        valve_type,
+                        defect_type,
+                        output_file_path,
+                        NUMBER_OF_INTERVALS,
+                        NUMBER_OF_ITEMS,
+                        CONFIDENCE_LEVEL,
+                    )
                 )
-                print(f"{file_name};{avg_failure_rate};{regression_line_slope};{regression_line_intercept}", file = numbers_file)
+                print(
+                    f"{file_name};{avg_failure_rate};{regression_line_slope};{regression_line_intercept}",
+                    file=numbers_file,
+                )

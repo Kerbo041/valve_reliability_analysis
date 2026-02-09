@@ -1,7 +1,7 @@
 import os
 from model.valve import Valve
 from model.defect import Defect
-from calculate_defect_intensivity import calculate_defect_intensivity
+from calculate_defect_intensivity import get_analysis_result
 from typing import Dict, List, Tuple
 
 
@@ -100,7 +100,7 @@ def get_analyzis_for_filtered_1(
         directory_path = os.path.dirname(output_file_path)
         if not os.path.isdir(directory_path):
             os.makedirs(directory_path, exist_ok=True)
-        calculate_defect_intensivity(
+        get_analysis_result(
             arrays[filter_array_name],
             valve_type,
             defect_type,

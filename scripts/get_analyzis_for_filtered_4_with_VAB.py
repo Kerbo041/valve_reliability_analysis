@@ -1,7 +1,7 @@
 import os
 from model.valve import Valve
 from model.defect import Defect
-from calculate_defect_intensivity import calculate_defect_intensivity
+from calculate_defect_intensivity import get_analysis_result
 from typing import Dict, List, Tuple
 
 
@@ -218,7 +218,10 @@ def get_analyzis_for_filtered_4(
                                 filtered_arrays["Клапаны обратные"][
                                     valve_list[valve_name].get_block_number()
                                 ]["defect_types"][defect.defect_class].append(value)
-                            if valve_list[valve_name].valve_type == "Клапан регулирующий":
+                            if (
+                                valve_list[valve_name].valve_type
+                                == "Клапан регулирующий"
+                            ):
                                 filtered_arrays["Клапаны регулирующие"][
                                     valve_list[valve_name].get_block_number()
                                 ]["defect_types"][defect.defect_class].append(value)
@@ -226,9 +229,7 @@ def get_analyzis_for_filtered_4(
                                 filtered_arrays["Шаровые краны"][
                                     valve_list[valve_name].get_block_number()
                                 ]["defect_types"][defect.defect_class].append(value)
-                            
-                            
-                            
+
                         except Exception as exception:
                             pass
         except Exception as exception:
@@ -246,7 +247,9 @@ def get_analyzis_for_filtered_4(
     defect_type = None
     for valve_type in filtered_arrays:
         for block_number in filtered_arrays[valve_type]:
-            for defect_class in filtered_arrays[valve_type][block_number]["defect_types"]:
+            for defect_class in filtered_arrays[valve_type][block_number][
+                "defect_types"
+            ]:
                 file_name = (
                     f"{valve_type}, блок {block_number} НВАЭС, {defect_class}.jpg"
                 )
@@ -259,10 +262,8 @@ def get_analyzis_for_filtered_4(
                 # if not os.path.isdir(directory_path):
                 #     os.makedirs(directory_path, exist_ok=True)
                 print(len(valves_filtered[valve_type][block_number]))
-                print(
-                    filtered_arrays[valve_type][block_number]["valves_count"]
-                )
-                result = calculate_defect_intensivity(
+                print(filtered_arrays[valve_type][block_number]["valves_count"])
+                result = get_analysis_result(
                     filtered_arrays[valve_type][block_number]["defect_types"][
                         defect_class
                     ],
