@@ -1,6 +1,5 @@
 from output_statistic_analyzis_to_csv import output_statistic_analyzis_to_csv
 from model.analysis import Analysis
-from model.analysis_result import AnalysisResult
 from model.valve_execution_type_enum import ValveExecutionType
 from model.valve_function_type_enum import ValveFunctionType
 from model.failure_type_enum import FailureType
@@ -8,10 +7,8 @@ from model.linear_regression import LinearRegression
 from model.calculated_parameter import CalculatedParameter
 from model.calculated_parameter_array import CalculatedParameterArray
 import numpy as np
-import matplotlib.pyplot as plt
 from scipy import stats
-import os
-from math import floor
+from typing import List, Tuple
 
 
 def calculate_average_intensity(
@@ -29,7 +26,6 @@ def calculate_average_intensity(
         return CalculatedParameter(name, average_intensity)
     except Exception as e:
         raise e
-        return None
 
 
 def calculate_confidence_interval_for_average_intensity(
@@ -70,20 +66,19 @@ def calculate_average_intensity_with_confidence_interval(
 
 
 def get_analysis_result(
-    analysis: Analysis,
+    # analysis: Analysis,  # Гад-object
+    groups: List[(Tuple)],
 ):
     try:
         # Предупреждение: рекомендуется не менее 50 значений для точного анализа
         # Расчёт средней интенсивности отказов
-
-        analysis_result = AnalysisResult()
 
         number_of_failures = len(analysis.operating_time_array)
 
         if not operating_period:
             operating_period = max(analysis.operating_time_array)
 
-        AnalysisResult.add_average_intensivity(
+        analysis.add_average_intensity(
             calculate_average_intensity_with_confidence_interval(
                 number_of_failures,
                 analysis.number_of_items,
@@ -93,7 +88,7 @@ def get_analysis_result(
             )
         )
         if analysis.operating_time_exceeds_observation:
-            AnalysisResult.add_observation_average_intensivity(
+            analysis.add_observation_average_intensity(
                 calculate_average_intensity_with_confidence_interval(
                     number_of_failures,
                     analysis.number_of_items,
@@ -113,9 +108,9 @@ def get_analysis_result(
             analysis.number_of_intervals + 1,
         )
         midpoints_of_intervals = (intervals_borders[:-1] + intervals_borders[1:]) / 2
-        analysis_result.add_operating_time_intervals(CalculatedParameterArray())
+        analysis.add_operating_time_intervals(CalculatedParameterArray())
         for i in range(analysis.number_of_intervals):
-            AnalysisResult.operating_time_intervals.append_value_to_array(
+            analysis.operating_time_intervals.append_value_to_array(
                 CalculatedParameter(
                     midpoints_of_intervals[i],
                     f"interval {i + 1}",
@@ -129,11 +124,11 @@ def get_analysis_result(
         )
 
         # Расчёт интенсивности отказов для каждого интервала
-        analysis_result.add_group_average_intensivity(
+        analysis.add_group_average_intensity(
             CalculatedParameterArray("failure_rates_for_each_group")
         )
         for _count in count_of_failures_in_groups:
-            analysis_result.group_average_intensivity.append_value_to_array(
+            analysis.group_average_intensity.append_value_to_array(
                 calculate_average_intensity_with_confidence_interval(
                     _count,
                     analysis.number_of_items,
@@ -180,7 +175,6 @@ def get_analysis_result(
         # )
         # output_statistic_analyzis_to_csv(
         # )
-        return analysis_result
     except Exception as exception:
         # print(output_file_path, exception)
         pass
