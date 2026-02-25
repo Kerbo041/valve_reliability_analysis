@@ -1,5 +1,5 @@
-from model.calculated_parameter import CalculatedParameter
-from model.calculated_parameter_array import CalculatedParameterArray
+from model.calculations_DTO.calculated_parameter import CalculatedParameter
+from model.calculations_DTO.calculated_parameter_array import CalculatedParameterArray
 from typing import List
 from scipy import stats
 import numpy as np

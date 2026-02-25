@@ -15,8 +15,8 @@ class CalculatedParameter:
     def set_upper_value(self, upper_value):
         self.upper_value = upper_value
 
-    def set_plot_config(self, color, grayscale_color, label, linestyle):
-        self.color = color
-        self.grayscale_color = grayscale_color
-        self.label = label
-        self.linestyle = linestyle
+    # def set_plot_config(self, color, grayscale_color, label, linestyle):
+    #     self.color = color
+    #     self.grayscale_color = grayscale_color
+    #     self.label = label
+    #     self.linestyle = linestyle
