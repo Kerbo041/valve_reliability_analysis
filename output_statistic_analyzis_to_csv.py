@@ -1,4 +1,4 @@
-from model.analysis import Analysis
+from model.analysis_result import Analysis
 import os
 from typing import List, Dict, Tuple
 

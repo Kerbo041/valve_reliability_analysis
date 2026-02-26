@@ -1,6 +1,4 @@
-from model.calculated_parameter import CalculatedParameter
-from model.calculated_parameter_array import CalculatedParameterArray
-from model.linear_regression import LinearRegression
+from model.analysis_DTO.linear_regression import LinearRegression
 from model.analysis_group import AnalysisGroup
 from typing import List
 from datetime import datetime
