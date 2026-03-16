@@ -1,6 +1,6 @@
 import os
-from model.valve import Valve
-from model.defect import Defect
+from src.model.reader_DTO.valve import Valve
+from src.model.reader_DTO.defect import Defect
 from calculate_defect_intensivity import get_analysis_result
 from typing import Dict, List, Tuple
 

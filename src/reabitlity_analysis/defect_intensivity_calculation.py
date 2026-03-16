@@ -3,12 +3,13 @@ from model.analysis_result import Analysis
 from model.valve_execution_type_enum import ValveExecutionType
 from model.valve_function_type_enum import ValveFunctionType
 from model.failure_type_enum import FailureType
-from model.analysis_DTO.linear_regression import LinearRegression
+from src.reabitlity_analysis.linear_regression import LinearRegression
 from model.calculated_parameter import CalculatedParameter
 from model.calculated_parameter_array import CalculatedParameterArray
 import numpy as np
 from scipy import stats
 from typing import List, Tuple
+from model.calculations_DTO.cohort import Cohort
 
 
 def calculate_average_intensity(
@@ -65,28 +66,10 @@ def calculate_average_intensity_with_confidence_interval(
     return average_intensity
 
 
-class Cohort:
-
-    def __init__(
-        self,
-        time_period_start,
-        time_period_end,
-        number_of_items=0,
-        number_of_failrues=0,
-    ):
-        self.time_period_start = time_period_start
-        self.time_period_end = time_period_end
-        self.number_of_items = number_of_items
-        self.number_of_failrues = number_of_failrues
-
-    def set_defect_intensity(self, defect_intencity: CalculatedParameter):
-        self.defect_intencity = defect_intencity
-
-
 def get_analysis_result(
     cohorts_array: List[Cohort], subperiod_duration, confidence_level
 ):
-    all_number_of_failrues = [cohort.number_of_failrues for cohort in cohorts_array]
+    all_number_of_failrues = [cohort.number_of_failures for cohort in cohorts_array]
     all_number_of_items = [cohort.number_of_items for cohort in cohorts_array]
 
     average_defect_intensivity = calculate_average_intensity_with_confidence_interval(
@@ -99,7 +82,7 @@ def get_analysis_result(
     for cohort in cohorts_array:
         cohort_defect_intensivity = (
             calculate_average_intensity_with_confidence_interval(
-                cohort.number_of_failrues,
+                cohort.number_of_failures,
                 cohort.number_of_items,
                 subperiod_duration,
                 confidence_level,

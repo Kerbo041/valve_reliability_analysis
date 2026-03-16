@@ -1,7 +1,8 @@
 import openpyxl
 from json import load
-from model.torex_record import TorexRecord
+from src.model.reader_DTO.torex_record import TorexRecord
 from typing import Dict, List, Tuple
+
 
 def read_column_names_from_json(column_names_file_path):
     with open(column_names_file_path, encoding="utf-8") as column_names_file:
@@ -9,7 +10,7 @@ def read_column_names_from_json(column_names_file_path):
     return column_names
 
 
-def get_torex_data_from_sheet(defects_list_sheet, column_names)-> List[TorexRecord]:
+def get_torex_data_from_sheet(defects_list_sheet, column_names) -> List[TorexRecord]:
     header_row = list(
         defects_list_sheet.iter_rows(min_row=1, max_row=1, values_only=True)
     )[0]
@@ -20,16 +21,16 @@ def get_torex_data_from_sheet(defects_list_sheet, column_names)-> List[TorexReco
     return defect_records_list
 
 
-def get_column_numbers(column_names: Dict[str,str], header_row: Tuple[str]):
+def get_column_numbers(column_names: Dict[str, str], header_row: Tuple[str]):
     """Получение номеров столбцов по их названиям.
-    
+
     Args:
         column_names (dict): Словарь с названиями столбцов в формате {ключ: название}.
         header_row (tuple): Кортеж с названиями столбцов из заголовка таблицы.
-    
+
     Returns:
         dict: Словарь с номерами столбцов в формате {ключ: номер}.
-    
+
     Raises:
         Exception: Если какой-то из столбцов не найден в заголовке.
     """
@@ -52,11 +53,11 @@ def get_torex_record_from_xlsx_row(defect_list_row, column_numbers):
     for key in column_numbers:
         record_data[key] = defect_list_row[column_numbers[key]]
     return TorexRecord(
-        full_valve_name = record_data["full_valve_name"],
-        description = record_data["description"],
-        valve_name_operational = record_data["valve_name_operational"],
-        valve_name_plant = record_data["valve_name_plant"],
-        block_number = record_data["block_number"],
-        valve_type_short = record_data["valve_type_short"],
-        commissioning_date = record_data["commissioning_date"]
+        full_valve_name=record_data["full_valve_name"],
+        description=record_data["description"],
+        valve_name_operational=record_data["valve_name_operational"],
+        valve_name_plant=record_data["valve_name_plant"],
+        block_number=record_data["block_number"],
+        valve_type_short=record_data["valve_type_short"],
+        commissioning_date=record_data["commissioning_date"],
     )

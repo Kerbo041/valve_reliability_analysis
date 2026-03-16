@@ -1,5 +1,5 @@
-from model.defect import Defect
-from model.torex_record import TorexRecord
+from src.model.reader_DTO.defect import Defect
+from src.model.reader_DTO.torex_record import TorexRecord
 from typing import Dict, List, Tuple
 from datetime import datetime
 
@@ -20,7 +20,7 @@ class Valve:
         valve_name_operational=None,  # ИЗ ТОРЭКС
         valve_name_plant=None,  # ИЗ ТОРЭКС
         full_valve_name=None,  # ИЗ ТОРЭКС
-        manufacturer_defined=None # Для дальнейшего определения
+        manufacturer_defined=None,  # Для дальнейшего определения
     ):
         self.valve_name = valve_name
         self.manufacturer = manufacturer
@@ -51,16 +51,16 @@ class Valve:
         self.full_valve_name = torex_record.full_valve_name
 
     def set_block_number(self, block_number):
-        if block_number == "3; 4" or '3; 4':
+        if block_number == "3; 4" or "3; 4":
             self.block_number = "3-4"
         if block_number == "6; 7" or block_number == "6" or block_number == "7":
             self.block_number = "6-7"
         else:
             self.block_number = block_number
-            
+
     def get_block_number_str(self):
         return f"БЛОК {self.get_block_number()}"
-    
+
     def to_str_with_defects(self):
         output = f"{self.valve_name};{self.manufacturer};type: {self.valve_type};main type: {self.main_valve_type};description: {self.get_descritpion()};element_name: {self.element_name};{self.full_valve_name};{self.get_block_number()};{self.commissioning_date};"
         # if self.description:
@@ -68,10 +68,10 @@ class Valve:
         for iter, defect in enumerate(self.defect_list):
             output += f"{iter}: {defect}"
         return output
+
     def __str__(self):
         output = f"{self.valve_name};{self.element_name};{self.description};{self.full_valve_name};{self.get_block_number_str()};{self.valve_type};{self.main_valve_type};"
         return output
-
 
     def __eq__(self, value):
         if self.valve_name == value:
@@ -81,7 +81,12 @@ class Valve:
 
     def get_block_number(self):
         try:
-            if self.block_number == '3; 4' or self.block_number == "БЛОК 3-4" or self.block_number == "3" or self.block_number == "4":
+            if (
+                self.block_number == "3; 4"
+                or self.block_number == "БЛОК 3-4"
+                or self.block_number == "3"
+                or self.block_number == "4"
+            ):
                 return "3-4"
             elif self.block_number == "БЛОК 5":
                 return "5"
@@ -110,4 +115,3 @@ class Valve:
                 )
         else:
             return ""
-

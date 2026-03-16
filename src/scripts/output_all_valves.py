@@ -1,9 +1,10 @@
-from model.valve import Valve
+from src.model.reader_DTO.valve import Valve
 from typing import List, Dict, Tuple
 from main import create_file
 
-def output_all_valves(valve_list:Dict[str, Valve] , output_path = "files\\data\\all.csv"):
-        
+
+def output_all_valves(valve_list: Dict[str, Valve], output_path="files\\data\\all.csv"):
+
     file_valves_all = create_file(output_path)
 
     for valve_name in valve_list:

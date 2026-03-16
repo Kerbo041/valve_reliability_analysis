@@ -1,6 +1,8 @@
-from model.valve import Valve
+from src.model.reader_DTO.valve import Valve
 from typing import List, Dict, Tuple
 import os
+
+
 def create_file(path):
     directory_path = os.path.dirname(path)
     if not os.path.isdir(directory_path):
@@ -21,7 +23,7 @@ file_result_for_valves_no_defect_type = create_file(
 def select_valves_by_type(
     valve_list: Dict[str, Valve],
     defect_types: Dict[str, List[str]],
-    types_whitelist: Dict[str, Dict[str, List[str]]]
+    types_whitelist: Dict[str, Dict[str, List[str]]],
 ):
 
     files_array_output = {
@@ -85,5 +87,6 @@ def select_valves_by_type(
             print(valve_list[valve_name], file=file_result_for_valves_error)
             print("no commissioning time", file=file_result_for_valves_error)
     return defect_array_output
+
 
 # --------------------------------------------------------------------------------------

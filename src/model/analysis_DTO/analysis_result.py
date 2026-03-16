@@ -1,4 +1,4 @@
-from model.analysis_DTO.linear_regression import LinearRegression
+from src.reabitlity_analysis.linear_regression import LinearRegression
 from model.analysis_group import AnalysisGroup
 from typing import List
 from datetime import datetime
