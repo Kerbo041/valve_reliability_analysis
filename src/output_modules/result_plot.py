@@ -1,4 +1,4 @@
-from model.analysis import Analysis
+from model.analysis_result import Analysis
 from matplotlib import pyplot as plt
 import os
 from math import floor
