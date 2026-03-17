@@ -72,14 +72,12 @@ if __name__ == "__main__":
         number_of_cohorts,
         analysis_data_set,
     )
-    print(analysis_result)
+    print(analysis_result.value)
     for i in cohorts_array:
         print(
             i.number_of_failures,
             i.number_of_items,
             i.time_period_start.days,
             i.time_period_end.days,
-            i.defect_intensity,
+            i.defect_intensity.value,
         )
-        sum += i.number_of_items
-    print(sum)

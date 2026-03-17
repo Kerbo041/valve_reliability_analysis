@@ -18,7 +18,7 @@ def calculate_average_intensity(
             )
         else:
             average_intensity = number_of_failures / (number_of_items * period)
-        return CalculatedParameter(name, average_intensity)
+        return CalculatedParameter(average_intensity, name)
     except Exception as e:
         raise e
 
@@ -41,7 +41,7 @@ def calculate_confidence_interval_for_average_intensity(
         )
     except Exception as e:
         raise e
-        return None
+    return None
 
 
 def calculate_average_intensity_with_confidence_interval(
