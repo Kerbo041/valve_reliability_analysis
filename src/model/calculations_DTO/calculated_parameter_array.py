@@ -1,4 +1,4 @@
-from model.calculated_parameter import CalculatedParameter
+from src.model.calculations_DTO.calculated_parameter import CalculatedParameter
 from typing import List
 
 

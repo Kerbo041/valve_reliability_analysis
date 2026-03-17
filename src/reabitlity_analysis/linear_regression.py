@@ -1,9 +1,11 @@
-from model.calculations_DTO.calculated_parameter import CalculatedParameter
-from model.calculations_DTO.calculated_parameter_array import CalculatedParameterArray
-from model.calculations_DTO.cohort import Cohort
 from typing import List
 from scipy import stats
 import numpy as np
+from src.model.calculations_DTO.calculated_parameter import CalculatedParameter
+from src.model.calculations_DTO.calculated_parameter_array import (
+    CalculatedParameterArray,
+)
+from src.model.calculations_DTO.cohort import Cohort
 
 
 def calculate_confidence_interval(

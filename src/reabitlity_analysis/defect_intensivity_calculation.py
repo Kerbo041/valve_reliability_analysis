@@ -1,9 +1,9 @@
-from src.reabitlity_analysis.linear_regression import calculate_regression_line
-from src.model.calculations_DTO.calculated_parameter import CalculatedParameter
 import numpy as np
 from scipy import stats
 from typing import List, Tuple
-from model.calculations_DTO.cohort import Cohort
+from src.reabitlity_analysis.linear_regression import calculate_regression_line
+from src.model.calculations_DTO.calculated_parameter import CalculatedParameter
+from src.model.calculations_DTO.cohort import Cohort
 
 
 def calculate_average_intensity(
