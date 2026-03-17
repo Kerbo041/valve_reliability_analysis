@@ -63,8 +63,10 @@ def calculate_average_intensity_with_confidence_interval(
 def get_analysis_result(
     cohorts_array: List[Cohort], subperiod_duration, confidence_level
 ):
-    all_number_of_failrues = [cohort.number_of_failures for cohort in cohorts_array]
-    all_number_of_items = [cohort.number_of_items for cohort in cohorts_array]
+    all_number_of_failrues = sum(
+        [cohort.number_of_failures for cohort in cohorts_array]
+    )
+    all_number_of_items = sum([cohort.number_of_items for cohort in cohorts_array])
 
     average_defect_intensivity = calculate_average_intensity_with_confidence_interval(
         all_number_of_failrues,
