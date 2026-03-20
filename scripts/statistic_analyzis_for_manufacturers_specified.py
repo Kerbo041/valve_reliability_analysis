@@ -1,5 +1,5 @@
 import os
-from calculate_defect_intensivity import calculate_defect_intensivity
+from calculate_defect_intensivity import get_analysis_result
 
 
 # --------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ def statistic_analyzis_for_manufacturers_specified(
         )
         valve_type = None
         defect_type = None
-        calculate_defect_intensivity(
+        get_analysis_result(
             manufacturers_defined_data[manufacturer],
             valve_type,
             defect_type,
@@ -30,4 +30,6 @@ def statistic_analyzis_for_manufacturers_specified(
             NUMBER_OF_ITEMS,
             CONFIDENCE_LEVEL,
         )
+
+
 # --------------------------------------------------------------------------------------

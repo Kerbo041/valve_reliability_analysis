@@ -3,9 +3,9 @@ from torex_xlsb_file_reader import get_torex_data_from_sheet
 from valve_type_search_in_torex import valve_type_search_in_torex
 from valve_type_analyzer import get_type_from_element_name, filter_valves_by_name
 from defect_type_analyzer import get_defect_type, get_defect_class
-from calculate_defect_intensivity import calculate_defect_intensivity
-from model.valve import Valve, Defect
-from model.torex_record import TorexRecord
+from calculate_defect_intensivity import get_analysis_result
+from src.model.reader_DTO.valve import Valve, Defect
+from src.model.reader_DTO.torex_record import TorexRecord
 from json import load
 from typing import Dict, List, Tuple
 import openpyxl

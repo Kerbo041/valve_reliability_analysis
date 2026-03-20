@@ -1,5 +1,6 @@
 import os
-from calculate_defect_intensivity import calculate_defect_intensivity
+from calculate_defect_intensivity import get_analysis_result
+
 
 # --------------------------------------------------------------------------------------
 # Выполнение статистического анализа для разных типов арматур и дефектов
@@ -19,7 +20,7 @@ def statistic_analyzis_for_types(
             output_file_path = os.path.join(
                 output_file_path, f"{valve_type}_{defect_type}_analysis.png"
             )
-            calculate_defect_intensivity(
+            get_analysis_result(
                 defect_array_output[valve_type][defect_type],
                 valve_type,
                 defect_type,

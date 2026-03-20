@@ -175,4 +175,5 @@ cython_debug/
 .pypirc
 
 /files
-/old_code
+/data
+/result
