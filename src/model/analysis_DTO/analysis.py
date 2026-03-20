@@ -1,21 +1,19 @@
 from model.calculations_DTO.calculated_parameter import CalculatedParameter
 from model.calculations_DTO.cohort import Cohort
 from typing import List, Tuple
+from src.model.analysis_DTO.filter_parameters import FilterParameters
+from src.model.analysis_DTO.analysis_parameters import AnalysisParameters
 
 
 class Analysis:
 
     def __init__(
         self,
-        observation_period_beginning,
-        observation_period_end,
-        number_of_semiperiods,
-        number_of_cohorts,
+        filter_parameters: FilterParameters,
+        analysis_parameters: AnalysisParameters,
     ):
-        self.observation_period_beginning = observation_period_beginning
-        self.observation_period_end = observation_period_end
-        self.number_of_semiperiods = number_of_semiperiods
-        self.number_of_cohorts = number_of_cohorts
+        self.filter_parameters = filter_parameters
+        self.analysis_parameters = analysis_parameters
 
     def get_observation_parameters(self):
         return (
